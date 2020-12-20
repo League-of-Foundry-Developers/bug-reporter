@@ -1,0 +1,1 @@
+Huge thanks to Moo Man for their work on the Bug Reporter for their WFRP4e FVTT system. This work is inspired by such work and adapts the code to work with all modules.
