@@ -6,7 +6,7 @@ it's magic from there.
 """
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from json import dumps
+import json
 import requests
 import os
 
@@ -21,7 +21,7 @@ class RequestHandler(BaseHTTPRequestHandler):
 
   def send_dict_response(self, d):
       """ Sends a dictionary (JSON) back to the client """
-      self.wfile.write(bytes(dumps(d), "utf8"))
+      self.wfile.write(bytes(json.dumps(d), "utf8"))
 
   def do_OPTIONS(self):
       self.send_response(200)
@@ -36,9 +36,11 @@ class RequestHandler(BaseHTTPRequestHandler):
 
       dataLength = int(self.headers["Content-Length"])
       data = self.rfile.read(dataLength)
+
+      jdata = json.loads(data)
       # Submit to GitHub
       token = os.environ["GITHUB_PAT"]
-      r = requests.post("https://api.github.com/repos/ethck/bug-reporter/issues", headers={"Authorization": f"token {token}"}, data=data)
+      r = requests.post(jdata["endpoint"], headers={"Authorization": f"token {token}"}, data=data)
       # Make Response
       response = {}
       response["status"] = "OK"

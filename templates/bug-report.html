@@ -1,11 +1,11 @@
 <div class="bug-report">
 <div class="form-group">
-    <label>Domain</label>
+    <label>Module</label>
     <select class="domain">
         <option value=""></option>
-        {{#select domains}}
-        {{#each domains as |domain index|}}
-        <option value="{{index}}">{{domain}}</option>
+        {{#select modules}}
+        {{#each modules as |module index|}}
+        <option value="{{index}}">{{module.name}}</option>
         {{/each}}
         {{/select}}
       </select>

@@ -2,20 +2,14 @@
  * Based off of Moo Man's Excellent WFRP4e Bug Reporter
  * https://github.com/moo-man/WFRP4e-FoundryVTT/blob/master/modules/apps/bug-report.js
  */
-export default class BugReportForm extends Application {
+class BugReportForm extends Application {
 
     constructor(app) {
         super(app)
-
         this.endpoint = "http://127.0.0.1:8000"
-
-        this.domains = [];
-        this.domainKeys = [];
-        game.modules.forEach((mod) => {
-          this.domains.push(mod.data.title);
-          this.domainKeys.push(mod.id);
-        }
-        );
+        this.modules = [...game.modules.values()]
+          .filter((mod) => mod.active && !!mod.data.bugs && mod.data.bugs.includes("github"))
+          .map((mod) => ({name: mod.data.title, bugs: mod.data.bugs, version: mod.data.version}))
     }
 
     static get defaultOptions() {
@@ -33,7 +27,7 @@ export default class BugReportForm extends Application {
 
     getData() {
         let data = super.getData();
-        data.domains = this.domains;
+        data.modules = this.modules;
         return data;
     }
 
@@ -46,7 +40,8 @@ export default class BugReportForm extends Application {
             body: JSON.stringify({
                 title: data.title,
                 body: data.description,
-                labels : data.labels
+                labels : data.labels,
+                endpoint: data.bugs
             })
         })
         .then(res => {
@@ -81,19 +76,19 @@ export default class BugReportForm extends Application {
             data.description = $(form).find(".bug-description")[0].value
             data.issuer = $(form).find(".issuer")[0].value
             let label = $(form).find(".issue-label")[0].value;
-            //data.title = `[${this.domains[Number(data.domain)]}] ${data.title}`
             data.description = data.description + `<br/>**From**: ${data.issuer}`
 
             if (!data.domain || !data.title || !data.description)
                 return ui.notifications.notify("Please fill out the form")
 
-            let mod = Array.from(game.modules).find(m => m[1].data.title == this.domains[data.domain])[1]
+            let mod = this.modules[data.domain];
             
             let versions = `<br/>${game.system.id}: ${game.system.data.version}`
 
-            versions = versions.concat(`<br/>${mod.data.title}: ${mod.data.version}`);           
+            versions = versions.concat(`<br/>${mod.name}: ${mod.version}`);           
 
             data.description = data.description.concat(versions);
+            data.bugs = mod.bugs;
 
             this.submit(data)
             this.close()
