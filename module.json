@@ -11,5 +11,5 @@
     "manifest": "https://raw.githubusercontent.com/ethck/bug-reporter/master/module.json",
     "download": "https://github.com/ethck/bug-reporter/releases/download/latest/bug-reporter.zip",
     "readme": "https://github.com/Ethck/bug-reporter/blob/master/README.md",
-    "bugs": "https://api.github.com/repos/ethck/bug-reporter/issues"
+    "bugs": "https://github.com/Ethck/bug-reporter/issues"
 }

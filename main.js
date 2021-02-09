@@ -9,7 +9,7 @@ class BugReportForm extends Application {
         this.endpoint = "http://127.0.0.1:8000"
         this.modules = [...game.modules.values()]
           .filter((mod) => mod.active && !!mod.data.bugs && mod.data.bugs.includes("github"))
-          .map((mod) => ({name: mod.data.title, bugs: mod.data.bugs, version: mod.data.version}))
+          .map((mod) => (mergeObject({name: mod.data.title, version: mod.data.version}, this.constructURLs(mod))));
     }
 
     static get defaultOptions() {
@@ -93,6 +93,19 @@ class BugReportForm extends Application {
             this.submit(data)
             this.close()
         })
+    }
+
+    constructURLs(module) {
+        const regex = /github.com\/(.+)\/issues/g;
+
+        const match = regex.exec(module.data.bugs);
+
+        const repo = match?.[1].toLowerCase();
+
+        const bugs = `https://api.github.com/repos/${repo}/issues`
+        const search = `https://api.github.com/search/issues?q=repo:${repo}`;
+
+        return {bugs: bugs, search: search};
     }
 }
 
