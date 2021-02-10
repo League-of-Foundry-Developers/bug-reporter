@@ -7,9 +7,9 @@
     "compatibleCoreVersion": "0.7.9",
     "author": "Ethck",
     "esmodules": ["/main.js"],
-    "url": "https://github.com/ethck/bug-reporter",
-    "manifest": "https://raw.githubusercontent.com/ethck/bug-reporter/master/module.json",
-    "download": "https://github.com/ethck/bug-reporter/releases/download/latest/bug-reporter.zip",
-    "readme": "https://github.com/Ethck/bug-reporter/blob/master/README.md",
-    "bugs": "https://github.com/Ethck/bug-reporter/issues"
+    "url": "https://github.com/League-of-Foundry-Developers/bug-reporter",
+    "manifest": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/module.json",
+    "download": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/bug-reporter.zip",
+    "readme": "https://github.com/League-of-Foundry-Developers/bug-reporter/blob/master/README.md",
+    "bugs": "https://github.com/League-of-Foundry-Developers/bug-reporter/issues"
 }
