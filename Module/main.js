@@ -5,7 +5,7 @@
 class BugReportForm extends Application {
   constructor(app) {
     super(app);
-    this.endpoint = "http://127.0.0.1:8000";
+    this.endpoint = "https://foundryvttbugreporter.azurewebsites.net/api/ReportBugFunction?code=VCvrWib1lha2nf9Pza7fOaThNTksbmHdEjVhIudCHwXg3zyg4vPprg==";
     this.modules = [...game.modules.values()]
       .filter(
         (mod) =>
