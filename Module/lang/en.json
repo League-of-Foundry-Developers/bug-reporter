@@ -1,26 +1,4 @@
 {
-  "CB5ES": {
-    "WeightCarried": "Weight Carried",
-
-    "settings": {
-      "displayPassives": {
-        "prc": {
-          "Label": "Show Passive Perception"
-        },
-        "ins": {
-          "Label": "Show Passive Insight"
-        },
-        "inv": {
-          "Label": "Show Passive Investigation"
-        },
-        "ste": {
-          "Label": "Show Passive Stealth"
-        }
-      },
-      "expandedLimited": {
-        "Label": "Use Expanded Sheet as Limited",
-        "Hint": "Show the full character sheet for users who have the Limited permission for a given Actor."
-      }
-    }
+  "BUG": {
   }
 }
