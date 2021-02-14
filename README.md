@@ -14,6 +14,11 @@ This module allows users to search for and sometimes create github issues for a 
 1. Have a url to a github repository issues page in the `bugs` field of your manifest.
 2. Add `allowBugReporter: true` to your manifest json.
 
+#### Example:
+```md
+  "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
+  "allowBugReporter": true
+```
 
 ### How does it work?
 
