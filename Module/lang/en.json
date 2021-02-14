@@ -1,4 +1,31 @@
 {
   "BUG": {
+    "form": {
+      "bugTitle": {
+        "label": "Title"
+      },
+      "issuer": {
+        "label": "Your Name",
+        "placeholder": "Discord, email, any way to contact you. Not required."
+      },
+      "issueLabel": {
+        "label": "Label",
+        "options": {
+          "bug": "Bug",
+          "enhancement": "Enhancement",
+          "translation": "Translation",
+          "incompatibility": "Package Incompatibility"
+        }
+      },
+      "bugDescription": {
+        "label": "Description",
+        "placeholder": "What happened, how to reproduce, etc."
+      }
+    },
+    "versionCheck": {
+      "upToDate": "Up to Date",
+      "updateRequired": "Update Required",
+      "label": "Version Check"
+    }
   }
 }

@@ -1,0 +1,39 @@
+.bug-report .form-group select {
+  width: 100%;
+}
+
+.bug-report .versionCheck {
+  display: flex;
+  align-self: center;
+  flex: 0 auto;
+  margin-left: auto;
+}
+
+.bug-report .versionCheck :not(:first-child) {
+  margin-left: 1em;
+}
+
+.bug-report .tag {
+  flex: none;
+  height: 1em;
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 0 0.2em;
+  font-size: 0.8em;
+  line-height: 1;
+  text-decoration: none;
+  background: #333;
+  color: #f0f0e0;
+}
+
+.bug-report .tag.success {  
+  background: green;
+}
+
+.bug-report .tag.warning {
+  background: orange;
+}
+
+.bug-report .tag.hidden {
+  display: none;
+}

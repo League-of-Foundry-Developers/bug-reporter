@@ -152,11 +152,13 @@ class BugReportForm extends Application {
     ).then((res) => {
       res.json().then((message) => {
         if (!isNewerVersion(message.manifest?.version, mod.version)) {
-          this.element.find(".notification.warning").css("display", "none");
-          this.element.find(".notification.info").css("display", "block");
+          // we are up to date
+          this.element.find(".tag.success").removeClass("hidden");
+          this.element.find(".tag.warning").addClass("hidden");
         } else {
-          this.element.find(".notification.warning").css("display", "block");
-          this.element.find(".notification.info").css("display", "none");
+          // update required
+          this.element.find(".tag.success").addClass("hidden");
+          this.element.find(".tag.warning").removeClass("hidden");
         }
       });
     });
