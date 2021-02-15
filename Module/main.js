@@ -36,10 +36,6 @@ class BugReportForm extends Application {
 
   getData() {
     let data = super.getData();
-    console.log('getData', {
-      module: this.module,
-      data,
-    });
     data.module = this.module;
     data.useBugReporter = this.useBugReporter;
     return data;
@@ -87,12 +83,9 @@ class BugReportForm extends Application {
   }
 
   search(event) {
-    // let modIndex = this.element.find(".bug-report .domain")[0].value;
     let query = $(event.currentTarget).val();
 
     let endpoint = `${this.endpoints.search}+"${query}"`;
-
-    //console.log(endpoint);
 
     if (query === '') {
       this.element.find("#bug-reporter-issues-found").empty();
@@ -110,9 +103,6 @@ class BugReportForm extends Application {
           this.element.find('.found-issues').removeClass('hidden');
 
           message.items.forEach((issue) => {
-            console.log('issue found', {
-              issue
-            })
             this.element.find("#bug-reporter-issues-found").append(`
                             <div class="issue-card">
                               <h4 class="flexrow">
