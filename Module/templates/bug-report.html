@@ -1,36 +1,35 @@
-<div class="bug-report">
-  <div class="form-group">
-    <label>Module</label>
-    <select class="domain">
-      <option value=""></option>
-      {{#select modules}} {{#each modules as |module index|}}
-      <option value="{{index}}">{{module.title}}</option>
-      {{/each}} {{/select}}
-    </select>
-  </div>
+{{log this}}
 
+<div class="bug-report">
   <div class="flexrow">
     <h2 class="flexrow">
-      <span>Selected Module Title</span>
+      <span>{{module.data.title}}</span>
 
       <small class="versionCheck">
+        <span>{{module.data.version}}</span>
         <div class="tag success hidden">{{localize 'BUG.versionCheck.upToDate'}}</div>
         <div class="tag warning hidden">{{localize 'BUG.versionCheck.updateRequired'}}</div>
       </small>
     </h2>
   </div>
 
-  <div class="form-group">
+
+  <form class="flexcol">
+
+  <div class="form-group-stacked">
     <label>{{localize 'BUG.form.bugTitle.label'}}</label>
     <input type="text" class="bug-title" />
   </div>
 
-  <div class="form-group">
-    <ol id="issues"></ol>
+  <div class="flexCol found-issues hidden" tabindex="-1">
+    <h3>{{localize 'BUG.foundIssues.title'}}</h3>
+    <div class="found-issue-list" id="bug-reporter-issues-found">
+      <small>{{localize 'BUG.foundIssues.none'}}</small>
+    </div>
   </div>
 
-  <div class="flexrow">
-    <div class="form-group">
+  <div class="flexrow input-row">
+    <div class="form-group-stacked">
       <label>{{localize 'BUG.form.issuer.label'}}</label>
       <input
         type="text"
@@ -40,7 +39,7 @@
       />
     </div>
 
-    <div class="form-group">
+    <div class="form-group-stacked">
       <label>{{localize 'BUG.form.issueLabel.label'}}</label>
       <select class="issue-label">
         <option value=""></option>
@@ -52,18 +51,16 @@
     </div>
   </div>
 
-
-
-
-  <div class="form-group">
+  <div class="form-group-stacked">
     <label class="wide">{{localize 'BUG.form.bugDescription.label'}}</label>
+    <textarea
+      placeholder="{{localize 'BUG.form.bugDescription.placeholder'}}"
+      class="bug-description"
+      maxlength="1024"
+    ></textarea>
   </div>
 
-  <textarea
-    placeholder="{{localize 'BUG.form.bugDescription.placeholder'}}"
-    class="bug-description"
-    maxlength="1024"
-  ></textarea>
 
   <button type="submit" class="bug-submit">Submit</button>
+  </form>
 </div>

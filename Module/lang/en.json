@@ -5,8 +5,8 @@
         "label": "Title"
       },
       "issuer": {
-        "label": "Your Name",
-        "placeholder": "Discord, email, any way to contact you. Not required."
+        "label": "Your Name (not required)",
+        "placeholder": "Discord, email, any way to contact you."
       },
       "issueLabel": {
         "label": "Label",
@@ -26,6 +26,14 @@
       "upToDate": "Up to Date",
       "updateRequired": "Update Required",
       "label": "Version Check"
+    },
+    "moduleSelect": {
+      "title": "Which Module?",
+      "helper": "Choose a module to proceed. If your module isn't on this list, it probably does not have a 'bugs' field in the manifest."
+    },
+    "foundIssues": {
+      "title": "Potentially Similar Issues",
+      "none": "None found."
     }
   }
 }
