@@ -12,6 +12,7 @@ using Octokit;
 using Octokit.Internal;
 using System.Text.RegularExpressions;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace FoundryVttBugReporterApi
 {
@@ -27,7 +28,7 @@ namespace FoundryVttBugReporterApi
             var requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var report = JsonConvert.DeserializeObject<BugReport>(requestBody);
 
-            var moderationResult = await contentModerator.TextModeration.ScreenTextAsync("text/plain", GenerateStreamFromString(report.Title + " " + report.Body), "eng", true, false, null, true);
+            var moderationResult = await contentModerator.TextModeration.ScreenTextAsync("text/plain", GenerateStreamFromString(GetContentToModerate(report)), "eng", true, false, null, true);
 
             if (moderationResult.Classification.ReviewRecommended.HasValue && moderationResult.Classification.ReviewRecommended.Value)
             {
@@ -37,12 +38,23 @@ namespace FoundryVttBugReporterApi
                 };
             }
 
-            
+
             var github = CreateGithubClient();
             var issue = new NewIssue(report.Title)
             {
-                Body = report.Body
+                Body = ""
             };
+
+            if (report.VersionInformation != null)
+            {
+                issue.Body += $"**Core:** {report.VersionInformation.Core}\n**System:** {report.VersionInformation.System}\n";
+                if (!string.IsNullOrEmpty(report.VersionInformation.Module))
+                {
+                    issue.Body += $"**Module Version: ** ${report.VersionInformation.Module}\n";
+                }
+            }
+
+            issue.Body += "\n" + report.Body;
 
             var githubUrlRegex = new Regex(@"github\.com\/([A-z|\-|1-9]*)\/([A-z|\-|1-9]*)");
             if (!githubUrlRegex.IsMatch(report.RepositoryUrl))
@@ -73,6 +85,27 @@ namespace FoundryVttBugReporterApi
                     StatusCode = StatusCodes.Status500InternalServerError
                 };
             }
+        }
+
+        private static string GetContentToModerate(BugReport report)
+        {
+            var toModerate = new List<string>()
+            {
+                report.Title,
+                report.Body
+            };
+
+            if (report.VersionInformation != null)
+            {
+                toModerate.Add(report.VersionInformation.Core);
+                toModerate.Add(report.VersionInformation.System);
+                if (!string.IsNullOrEmpty(report.VersionInformation.Module))
+                {
+                    toModerate.Add(report.VersionInformation.Module);
+                }
+            }
+
+            return string.Join(" ", toModerate);
         }
 
         private static Stream GenerateStreamFromString(string s)
