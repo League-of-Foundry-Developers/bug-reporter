@@ -1,6 +1,6 @@
 {
     "name": "bug-reporter",
-    "title": "A Module for Reporting Bugs for Other Modules",
+    "title": "🐛 Bug Reporter",
     "description": "Adds a utility in game to report bugs without having to leave Foundry.",
     "version": "1.0.0",
     "minimumCoreVersion": "0.7.5",
