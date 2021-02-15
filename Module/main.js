@@ -50,8 +50,7 @@ class BugReportForm extends Application {
       body: JSON.stringify({
         title: data.title,
         body: data.description,
-        labels: data.labels,
-        endpoint: data.bugs,
+        repo: data.bugs,
       }),
     })
       .then((res) => {
@@ -124,27 +123,38 @@ class BugReportForm extends Application {
       ev.preventDefault();
 
       const mod = this.module;
-      let data = {};
       let form = $(ev.currentTarget).parents("form")[0];
 
-      data.domain = $(form).find(".domain")[0].value;
-      data.title = $(form).find(".bug-title")[0].value;
-      data.ogtitle = data.title;
-      data.description = $(form).find(".bug-description")[0].value;
-      data.issuer = $(form).find(".issuer")[0].value;
-      let label = $(form).find(".issue-label")[0].value;
-      data.description = data.description + `<br/>**From**: ${data.issuer}`;
+      const title = $(form).find(".bug-title")[0].value;
+      
+      const description = $(form).find(".bug-description")[0].value;
 
-      if (!data.domain || !data.title || !data.description)
-        return ui.notifications.notify("Please fill out the form");
+      const issuer = $(form).find(".issuer")[0].value;
+      
+      const label = $(form).find(".issue-label")[0].value;
+      
+      const descriptionString = `**Description**:\n${description}`;
+      const issuerString = issuer ? `**Submitted By**: ${issuer}` : '';
+      const labelString = label ? `**Feedback Type**: ${label}` : '';
 
+      const versions = [
+        `**Core:** ${game.data.version}`,
+        `**System:** ${game.system.id} v${game.system.data.version}`,
+        `**Module Version:** ${mod.data.name} v${mod.data.version}`
+      ];
 
-      let versions = `<br/>${game.system.id}: ${game.system.data.version}`;
+      if (!title || !description) {
+        ui.notifications.notify("Please fill out the form")
+        return;
+      }
 
-      versions = versions.concat(`<br/>${mod.name}: ${mod.version}`);
+      const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
-      data.description = data.description.concat(versions);
-      data.bugs = this.endpoints.bugs;
+      const data = {
+        bugs: this.module.data.bugs,
+        title,
+        description: fullDescription
+      }
 
       this.submit(data);
       this.close();

@@ -35,7 +35,8 @@
       "title": "Potentially Similar Issues",
       "none": "None found."
     },
-    "unsupported": "The author of that module has not enabled Bug Reporter functionality. Please submit your bugs here:",
+    "unsupported": "The author of that module has not enabled Bug Reporter functionality.",
+    "submitHere": "Please submit your bugs here:",
     "proceed": "Proceed",
     "submit": "Submit"
   }

@@ -16,7 +16,7 @@
   <form class="flexcol">
 
     <div class="form-group-stacked">
-      <label>{{localize 'BUG.form.bugTitle.label'}}</label>
+      <label>{{localize 'BUG.form.bugTitle.label'}}*</label>
       <input type="text" class="bug-title" />
     </div>
 
@@ -51,19 +51,19 @@
     </div>
 
     <div class="form-group-stacked">
-      <label class="wide">{{localize 'BUG.form.bugDescription.label'}}</label>
+      <label class="wide">{{localize 'BUG.form.bugDescription.label'}}*</label>
       <textarea
         placeholder="{{localize 'BUG.form.bugDescription.placeholder'}}"
         class="bug-description"
-        maxlength="1024"
+        maxlength="875"
       ></textarea>
     </div>
-
 
     <button type="submit" class="bug-submit">{{localize "BUG.submit"}}</button>
   </form>
   {{else}}
   <p>{{localize "BUG.unsupported"}}</p>
+  <h3>{{localize "BUG.submitHere"}}</h3>
   <a href="{{module.data.bugs}}">{{module.data.bugs}}</a>
   {{/if}}
 </div>
