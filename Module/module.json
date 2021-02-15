@@ -1,9 +1,9 @@
 {
     "name": "bug-reporter",
-    "title": "A Module for Reporting Bugs for Other Modules",
+    "title": "🐛 Bug Reporter",
     "description": "Adds a utility in game to report bugs without having to leave Foundry.",
-    "version": "0.0.1",
-    "minimumCoreVersion": "0.7.0",
+    "version": "1.0.0",
+    "minimumCoreVersion": "0.7.5",
     "compatibleCoreVersion": "0.7.9",
     "author": "Ethck",
     "authors": [
@@ -34,11 +34,21 @@
         "path": "lang/en.json"
       }
     ],
+    "media": [
+      {
+        "type": "cover",
+        "link": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/cover-image.jpg"
+      },
+      {
+        "type": "screenshot",
+        "link": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/form-flow.png"
+      }
+    ],
     "esmodules": ["/main.js"],
     "styles": ["/style.css"],
     "url": "https://github.com/League-of-Foundry-Developers/bug-reporter",
-    "manifest": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/module.json",
-    "download": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/bug-reporter.zip",
+    "manifest": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/manifest.json",
+    "download": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/module.zip",
     "readme": "https://github.com/League-of-Foundry-Developers/bug-reporter/blob/master/README.md",
     "bugs": "https://github.com/League-of-Foundry-Developers/bug-reporter/issues",
     "allowBugReporter": true

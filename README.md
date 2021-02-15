@@ -8,6 +8,8 @@ This module allows users to search for and sometimes create github issues for a 
 - For opted-in modules, a form within Foundry will submit a bug report.
 - For non-opted-in modules, a link to the module's github issues list will be displayed.
 
+![The Bug Submission Form](/form-flow.png)
+
 ## Info for Package Developers
 
 ### How do I opt in?

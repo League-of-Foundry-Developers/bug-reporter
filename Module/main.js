@@ -1,23 +1,61 @@
+
+Handlebars.registerHelper('bugs-isEmpty', (input) => {
+  if (!input) {
+    return true;
+  }
+  if (input instanceof Array) {
+    return input.length < 1;
+  }
+  if (input instanceof Set) {
+    return input.size < 1;
+  }
+  return isObjectEmpty(input);
+});
+
+
 /**
  * Based off of Moo Man's Excellent WFRP4e Bug Reporter
  * https://github.com/moo-man/WFRP4e-FoundryVTT/blob/master/modules/apps/bug-report.js
  */
-class BugReportForm extends Application {
+class BugReportForm extends FormApplication {
   constructor(app, { selectedModule }) {
     super(app);
     this.endpoint = "https://foundryvttbugreporter.azurewebsites.net/api/ReportBugFunction?code=VCvrWib1lha2nf9Pza7fOaThNTksbmHdEjVhIudCHwXg3zyg4vPprg==";
     this.module = game.modules.get(selectedModule);
     this.useBugReporter = this.module.data.allowBugReporter && this.module.data.bugs.includes("github");
+
+    this.formFields = {
+      bugTitle: '',
+      issuer: '',
+      issueLabel: '',
+      bugDescription: '',
+    }
+
+    this.foundIssues = [];
+
+    this.isSending = false; // true while waiting for server response
+    this.submittedIssue = undefined;
+  }
+
+	get isEditable() {
+	  return this.options.editable && !this.isSending && !this.submittedIssue;
   }
 
   static get defaultOptions() {
-    const options = super.defaultOptions;
-    options.id = "bug-report";
-    options.template = "modules/bug-reporter/templates/bug-report.html";
-    options.resizable = true;
-    options.width = 600;
-    options.minimizable = true;
-    options.title = "Post Your Bugs";
+    const options = {
+      ...super.defaultOptions,
+      closeOnSubmit: false,
+
+      classes: ['bug-report'],
+      submitOnChange: false,
+      submitOnClose: false,
+      id: "bug-report",
+      template: "modules/bug-reporter/templates/bug-report.html",
+      height: 'auto',
+      width: 600,
+      minimizable: true,
+      title: "Post Your Bugs",
+    };
     return options;
   }
 
@@ -35,14 +73,68 @@ class BugReportForm extends Application {
   }
 
   getData() {
-    let data = super.getData();
-    data.module = this.module;
-    data.useBugReporter = this.useBugReporter;
+    let data = {
+      ...super.getData(), 
+      formFields: this.formFields,
+      foundIssues: this.foundIssues,
+      isSending: this.isSending,
+      module: this.module,
+      submittedIssue: this.submittedIssue,
+      useBugReporter: this.useBugReporter,
+    };
+
     return data;
   }
 
-  submit(data) {
-    fetch(this.endpoint, {
+  /**
+   * override
+   */
+  _onChangeInput(event) {
+    const el = event.target;
+
+    const inputField = el.name.split('.')[1]; // super brittle
+
+    this.formFields[inputField] = el.value;
+
+    if (el.name === 'formFields.bugTitle') {
+      this.search(event);
+    }
+  }
+
+  async _updateObject(ev, formData) {
+    const mod = this.module;
+    const {formFields: { bugTitle, bugDescription, issuer, label }} = expandObject(formData);
+
+    // if any of our warnings are not checked, throw
+    if (!bugTitle || !bugDescription) {
+      const errorMessage = game.i18n.localize('BUG.form.errors.incomplete');
+      ui.notifications.error(errorMessage);
+
+      throw errorMessage;
+    }
+    
+    const descriptionString = `**Description**:\n${bugDescription}`;
+    const issuerString = issuer ? `**Submitted By**: ${issuer}` : '';
+    const labelString = label ? `**Feedback Type**: ${label}` : '';
+
+    const versions = [
+      `**Core:** ${game.data.version}`,
+      `**System:** ${game.system.id} v${game.system.data.version}`,
+      `**Module Version:** ${mod.data.name} v${mod.data.version}`
+    ];
+
+    const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
+
+    const data = {
+      bugs: this.module.data.bugs,
+      title: bugTitle,
+      description: fullDescription
+    }
+
+    this.isSending = true;
+    this.render();
+
+    await fetch(this.endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -53,35 +145,36 @@ class BugReportForm extends Application {
         repo: data.bugs,
       }),
     })
-      .then((res) => {
+      .then(async (res) => {
         if (res.status == 201) {
-          ui.notifications.notify(
-            "The Imperial Post Has Received Your Grievance! See the console for a link."
-          );
-          res.json().then((message) => {
-            console.log(message);
+          await res.json().then((message) => {
+            this.submittedIssue = message;
             console.log(
-              "%c%s%c%s",
-              "color: gold",
-              `IMPERIAL POST:`,
-              "color: unset",
-              ` Thank you for your grievance submission. If you wish to monitor or follow up with additional details like screenshots, you can find your issue here: ${message.json.html_url}`
+              "Thank you for your submission. If you wish to monitor or follow up with additional details like screenshots, you can find your issue here:",
+              message.htmlUrl
             );
           });
         } else {
           ui.notifications.error(
-            "The Imperial Post cannot receive your missive. Please see console for details."
+            game.i18n.localize('BUG.error')
           );
-          console.error(res);
+          console.error('Bug Reporter encountered the following problem submitting your issue. Oh the irony...', res);
         }
       })
       .catch((err) => {
         ui.notifications.error("Something went wrong.");
         console.error(err);
+      })
+      .finally(() => {
+        this.isSending = false;
+        this.render();
       });
   }
 
-  search(event) {
+  /**
+   * Get Issues from GH and put into this.foundIssues, then this.render();
+   */
+  async search(event) {
     let query = $(event.currentTarget).val();
 
     let endpoint = `${this.endpoints.search}+"${query}"`;
@@ -92,75 +185,30 @@ class BugReportForm extends Application {
       return;
     }
 
-    fetch(endpoint, {
+    const fetchedIssues = await fetch(endpoint, {
       method: "GET",
-    }).then((res) => {
-      res.json().then((message) => {
-        this.element.find("#bug-reporter-issues-found").empty();
-
-        if (message.items.length > 0) {
-          this.element.find('.found-issues').removeClass('hidden');
-
-          message.items.forEach((issue) => {
-            this.element.find("#bug-reporter-issues-found").append(`
-                            <div class="issue-card">
-                              <h4 class="flexrow">
-                                <a href=${issue.html_url} tabindex="-1">${issue.title}</a>
-                                <div class="tag ${issue.state === 'open' ? 'success' : 'error'}">${issue.state}</div>
-                              </h4>
-                              <p>Opened ${new Date(issue.created_at).toLocaleDateString()}</p>
-                            </div>`);
-          });
-        } else {
-          this.element.find('.found-issues').addClass('hidden');
-        }
-      });
     });
+    const message = await fetchedIssues.json();
+
+    this.foundIssues = message.items.map(
+      ({html_url, state, created_at, title}) => ({
+        html_url,
+        state,
+        openedLabel: new Date(created_at).toLocaleDateString(),
+        title
+      })
+    );
+
+    this.render();
   }
 
   activateListeners(html) {
-    html.find(".bug-submit").click((ev) => {
-      ev.preventDefault();
+    super.activateListeners(html);
 
-      const mod = this.module;
-      let form = $(ev.currentTarget).parents("form")[0];
-
-      const title = $(form).find(".bug-title")[0].value;
-      
-      const description = $(form).find(".bug-description")[0].value;
-
-      const issuer = $(form).find(".issuer")[0].value;
-      
-      const label = $(form).find(".issue-label")[0].value;
-      
-      const descriptionString = `**Description**:\n${description}`;
-      const issuerString = issuer ? `**Submitted By**: ${issuer}` : '';
-      const labelString = label ? `**Feedback Type**: ${label}` : '';
-
-      const versions = [
-        `**Core:** ${game.data.version}`,
-        `**System:** ${game.system.id} v${game.system.data.version}`,
-        `**Module Version:** ${mod.data.name} v${mod.data.version}`
-      ];
-
-      if (!title || !description) {
-        ui.notifications.notify("Please fill out the form")
-        return;
-      }
-
-      const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
-
-      const data = {
-        bugs: this.module.data.bugs,
-        title,
-        description: fullDescription
-      }
-
-      this.submit(data);
+    $(html).on('click', 'a', function() {
       this.close();
-    });
+    }.bind(this));
 
-    html.find(".bug-title").change((event) => this.search(event));
     this.checkVer();
   }
 
@@ -172,6 +220,10 @@ class BugReportForm extends Application {
         game.data.version
     ).then((res) => {
       res.json().then((message) => {
+        if (message.manifest === null) {
+          return;
+        }
+
         if (!isNewerVersion(message.manifest?.version, this.module.data.version)) {
           // we are up to date
           this.element.find(".tag.success").removeClass("hidden");
