@@ -52,10 +52,10 @@
       <select name="formFields.label" data-type="String" class="issue-label">
         {{#select formFields.label}}
         <option value=""></option>
-        <option value="bug">{{localize 'BUG.form.issueLabel.options.bug'}}</option>
-        <option value="enhancement">{{localize 'BUG.form.issueLabel.options.enhancement'}}</option>
-        <option value="translation">{{localize 'BUG.form.issueLabel.options.translation'}}</option>
-        <option value="mod-incompat">{{localize 'BUG.form.issueLabel.options.incompatibility'}}</option>
+        <option value="Bug">{{localize 'BUG.form.issueLabel.options.bug'}}</option>
+        <option value="Enhancement">{{localize 'BUG.form.issueLabel.options.enhancement'}}</option>
+        <option value="Translation">{{localize 'BUG.form.issueLabel.options.translation'}}</option>
+        <option value="Module Incompatibility">{{localize 'BUG.form.issueLabel.options.incompatibility'}}</option>
         {{/select}}
       </select>
     </div>
@@ -69,7 +69,7 @@
       maxlength="875"
       name="formFields.bugDescription"
       value="{{formFields.bugDescription}}"
-      rows=5
+      rows=10
       data-type="String"
     ></textarea>
   </div>

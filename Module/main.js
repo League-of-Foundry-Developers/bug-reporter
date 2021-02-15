@@ -83,13 +83,6 @@ class BugReportForm extends FormApplication {
       useBugReporter: this.useBugReporter,
     };
 
-    console.log('getData', {
-      data,
-      formFields: this.formFields,
-      foundIssues: this.foundIssues,
-      useBugReporter: this.useBugReporter
-    })
-
     return data;
   }
 
@@ -98,8 +91,6 @@ class BugReportForm extends FormApplication {
    */
   _onChangeInput(event) {
     const el = event.target;
-
-    console.log('onChangeInput', {el, name: el.name, value: el.value})
 
     const inputField = el.name.split('.')[1]; // super brittle
 
@@ -111,8 +102,6 @@ class BugReportForm extends FormApplication {
   }
 
   async _updateObject(ev, formData) {
-    console.log('_updateObject', {formData})
-
     const mod = this.module;
     const {formFields: { bugTitle, bugDescription, issuer, label }} = expandObject(formData);
 
@@ -160,10 +149,6 @@ class BugReportForm extends FormApplication {
         if (res.status == 201) {
           await res.json().then((message) => {
             this.submittedIssue = message;
-            console.log('fetched', {
-              message,
-              submittedIssue: this.submittedIssue
-            })
             console.log(
               "Thank you for your submission. If you wish to monitor or follow up with additional details like screenshots, you can find your issue here:",
               message.htmlUrl
@@ -220,12 +205,9 @@ class BugReportForm extends FormApplication {
   activateListeners(html) {
     super.activateListeners(html);
 
-    console.log('this.isEditable', this.isEditable);
-
     $(html).on('click', 'a', function() {
       this.close();
     }.bind(this));
-    
 
     this.checkVer();
   }
@@ -238,6 +220,10 @@ class BugReportForm extends FormApplication {
         game.data.version
     ).then((res) => {
       res.json().then((message) => {
+        if (message.manifest === null) {
+          return;
+        }
+
         if (!isNewerVersion(message.manifest?.version, this.module.data.version)) {
           // we are up to date
           this.element.find(".tag.success").removeClass("hidden");
