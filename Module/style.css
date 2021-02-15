@@ -1,3 +1,7 @@
+.bug-report .window-content {
+  position: relative;
+}
+
 .bug-report .form-group select {
   width: 100%;
 }
@@ -77,4 +81,83 @@
 .bug-report form > :not(:first-child) {
   margin-top: 1em;
   margin-bottom: 0;
+}
+
+.bug-report .overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.75);
+  color: white;
+  display: flex;
+  place-content: center;
+  place-items: center;
+  margin: 0;
+}
+
+.bug-report .overlay > * {
+  flex: 0 0 auto;
+}
+
+/* Created by Luke Haas https://projects.lukehaas.me/css-loaders/ */
+.bug-report .loader,
+.bug-report .loader:before,
+.bug-report .loader:after {
+  background: #ffffff;
+  -webkit-animation: load1 1s infinite ease-in-out;
+  animation: load1 1s infinite ease-in-out;
+  width: 1em;
+  height: 4em;
+}
+.bug-report .loader {
+  color: #ffffff;
+  text-indent: -9999em;
+  margin: 88px auto;
+  position: relative;
+  font-size: 11px;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+.bug-report .loader:before,
+.bug-report .loader:after {
+  position: absolute;
+  top: 0;
+  content: '';
+}
+.bug-report .loader:before {
+  left: -1.5em;
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+.bug-report .loader:after {
+  left: 1.5em;
+}
+@-webkit-keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
+}
+@keyframes load1 {
+  0%,
+  80%,
+  100% {
+    box-shadow: 0 0;
+    height: 4em;
+  }
+  40% {
+    box-shadow: 0 -2em;
+    height: 5em;
+  }
 }

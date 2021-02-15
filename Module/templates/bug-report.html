@@ -1,69 +1,97 @@
-<div class="bug-report">
-  <div class="flexrow">
-    <h2 class="flexrow">
-      <span>{{module.data.title}}</span>
 
-      <small class="versionCheck">
-        <span>v{{module.data.version}}</span>
-        <div class="tag success hidden">{{localize 'BUG.versionCheck.upToDate'}}</div>
-        <div class="tag warning hidden">{{localize 'BUG.versionCheck.updateRequired'}}</div>
-      </small>
-    </h2>
+<form>
+<div class="flexrow">
+  <h2 class="flexrow">
+    <span>{{module.data.title}}</span>
+
+    <small class="versionCheck">
+      <span>v{{module.data.version}}</span>
+      <div class="tag success hidden">{{localize 'BUG.versionCheck.upToDate'}}</div>
+      <div class="tag warning hidden">{{localize 'BUG.versionCheck.updateRequired'}}</div>
+    </small>
+  </h2>
+</div>
+
+{{#if useBugReporter}}
+  <div class="form-group-stacked">
+    <label>{{localize 'BUG.form.bugTitle.label'}}*</label>
+    <input type="text" class="bug-title" name="formFields.bugTitle" data-dtype="String" value="{{formFields.bugTitle}}" />
   </div>
 
+  <div class="flexCol found-issues {{#if (bugs-isEmpty foundIssues)}}hidden{{/if}}" tabindex="-1">
+    <h3>{{localize 'BUG.foundIssues.title'}}</h3>
+    <div class="found-issue-list" id="bug-reporter-issues-found">
+      {{#each foundIssues}}
+      <div class="issue-card">
+        <h4 class="flexrow">
+          <a href="{{html_url}}" tabindex="-1">{{title}}</a>
+          <div class="tag {{#if (eq state 'open')}}success{{else}}error'{{/if}}">{{state}}</div>
+        </h4>
+        <p>Opened {{openedLabel}}</p>
+      </div>
+      {{/each}}
+    </div>
+  </div>
 
-  {{#if useBugReporter}}
-  <form class="flexcol">
-
+  <div class="flexrow input-row">
     <div class="form-group-stacked">
-      <label>{{localize 'BUG.form.bugTitle.label'}}*</label>
-      <input type="text" class="bug-title" />
-    </div>
-
-    <div class="flexCol found-issues hidden" tabindex="-1">
-      <h3>{{localize 'BUG.foundIssues.title'}}</h3>
-      <div class="found-issue-list" id="bug-reporter-issues-found">
-        <small>{{localize 'BUG.foundIssues.none'}}</small>
-      </div>
-    </div>
-
-    <div class="flexrow input-row">
-      <div class="form-group-stacked">
-        <label>{{localize 'BUG.form.issuer.label'}}</label>
-        <input
-          type="text"
-          placeholder="{{localize 'BUG.form.issuer.placeholder'}}"
-          value="{{name}}"
-          class="issuer"
-        />
-      </div>
-
-      <div class="form-group-stacked">
-        <label>{{localize 'BUG.form.issueLabel.label'}}</label>
-        <select class="issue-label">
-          <option value=""></option>
-          <option value="bug">{{localize 'BUG.form.issueLabel.options.bug'}}</option>
-          <option value="enhancement">{{localize 'BUG.form.issueLabel.options.enhancement'}}</option>
-          <option value="translation">{{localize 'BUG.form.issueLabel.options.translation'}}</option>
-          <option value="mod-incompat">{{localize 'BUG.form.issueLabel.options.incompatibility'}}</option>
-        </select>
-      </div>
+      <label>{{localize 'BUG.form.issuer.label'}}</label>
+      <input 
+        name="formFields.issuer"
+        data-dtype="String"
+        value="{{formFields.issuer}}"
+        type="text"
+        placeholder="{{localize 'BUG.form.issuer.placeholder'}}"
+        class="issuer"
+      />
     </div>
 
     <div class="form-group-stacked">
-      <label class="wide">{{localize 'BUG.form.bugDescription.label'}}*</label>
-      <textarea
-        placeholder="{{localize 'BUG.form.bugDescription.placeholder'}}"
-        class="bug-description"
-        maxlength="875"
-      ></textarea>
+      <label>{{localize 'BUG.form.issueLabel.label'}}</label>
+      
+      <select name="formFields.label" data-type="String" class="issue-label">
+        {{#select formFields.label}}
+        <option value=""></option>
+        <option value="bug">{{localize 'BUG.form.issueLabel.options.bug'}}</option>
+        <option value="enhancement">{{localize 'BUG.form.issueLabel.options.enhancement'}}</option>
+        <option value="translation">{{localize 'BUG.form.issueLabel.options.translation'}}</option>
+        <option value="mod-incompat">{{localize 'BUG.form.issueLabel.options.incompatibility'}}</option>
+        {{/select}}
+      </select>
     </div>
+  </div>
 
-    <button type="submit" class="bug-submit">{{localize "BUG.submit"}}</button>
-  </form>
-  {{else}}
-  <p>{{localize "BUG.unsupported"}}</p>
-  <h3>{{localize "BUG.submitHere"}}</h3>
-  <a href="{{module.data.bugs}}">{{module.data.bugs}}</a>
+  <div class="form-group-stacked">
+    <label class="wide">{{localize 'BUG.form.bugDescription.label'}}*</label>
+    <textarea
+      placeholder="{{localize 'BUG.form.bugDescription.placeholder'}}"
+      class="bug-description"
+      maxlength="875"
+      name="formFields.bugDescription"
+      value="{{formFields.bugDescription}}"
+      rows=5
+      data-type="String"
+    ></textarea>
+  </div>
+
+  <button type="submit" {{#if isSending}}disabled{{/if}} class="bug-submit">{{localize "BUG.submit"}}</button>
+
+{{else}}
+<p>{{localize "BUG.unsupported"}}</p>
+<h3>{{localize "BUG.submitHere"}}</h3>
+<a href="{{module.data.bugs}}">{{module.data.bugs}}</a>
+{{/if}}
+</form>
+
+{{#if (or isSending submittedIssue)}}
+<div class="overlay flexcol">
+  {{#if submittedIssue}}
+  <h3>{{localize "BUG.submitted"}}</h3>
+  <p><a href="{{submittedIssue.htmlUrl}}">{{submittedIssue.htmlUrl}}</a></p>
+  {{/if}}
+
+  {{#if isSending}}
+  <div class="loader">Loading...</div>
   {{/if}}
 </div>
+{{/if}}

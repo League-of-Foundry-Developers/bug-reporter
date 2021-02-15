@@ -20,6 +20,9 @@
       "bugDescription": {
         "label": "Description",
         "placeholder": "What happened, how to reproduce, etc."
+      },
+      "errors": {
+        "incomplete": "Please finish filling out required values."
       }
     },
     "versionCheck": {
@@ -37,6 +40,8 @@
     },
     "unsupported": "The author of that module has not enabled Bug Reporter functionality.",
     "submitHere": "Please submit your bugs here:",
+    "submitted": "Issue created, you can view it here:",
+    "error": "There was an error creating your issue, see the console for details.",
     "proceed": "Proceed",
     "submit": "Submit"
   }
