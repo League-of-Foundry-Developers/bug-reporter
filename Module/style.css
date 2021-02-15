@@ -1,0 +1,80 @@
+.bug-report .form-group select {
+  width: 100%;
+}
+
+.bug-report .versionCheck {
+  display: flex;
+  align-self: center;
+  flex: 0 auto;
+  margin-left: auto;
+}
+
+.bug-report .versionCheck :not(:first-child) {
+  margin-left: 1em;
+}
+
+.bug-report .tag {
+  flex: none;
+  height: auto;
+  align-self: center;
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 0 0.2em;
+  font-size: 0.8em;
+  line-height: normal;
+  text-decoration: none;
+  background: #333;
+  color: #f0f0e0;
+}
+
+.bug-report .tag.success {  
+  background: green;
+}
+
+.bug-report .tag.warning {
+  background: orangered;
+}
+
+.bug-report .tag.error {
+  background: red;
+}
+
+.bug-report .hidden {
+  display: none;
+}
+
+.bug-report .input-row > :not(:first-child) {
+  margin-left: 1em;
+}
+
+.bug-report .found-issues {
+  background: rgba(0,0,0,0.75) url(/ui/denim075.png) repeat;
+  color: white;
+  border-radius: 3px;
+  padding: 1em;
+}
+
+.bug-report .found-issues .tag {
+  align-self: flex-start;
+}
+
+.bug-report .found-issue-list {
+  display: flex;
+  overflow: overlay;
+}
+
+.bug-report .found-issue-list > :not(:first-child) {
+  margin-left: 0.5em;
+}
+
+.bug-report .found-issue-list .issue-card {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  padding: 0.5em;
+  flex: 1 0 33%;
+}
+
+.bug-report form > :not(:first-child) {
+  margin-top: 1em;
+  margin-bottom: 0;
+}

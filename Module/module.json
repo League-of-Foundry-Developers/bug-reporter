@@ -27,7 +27,15 @@
           "patreon": "ElfFriend_DnD"
         }
     ],
+    "languages": [
+      {
+        "lang": "en",
+        "name": "English",
+        "path": "lang/en.json"
+      }
+    ],
     "esmodules": ["/main.js"],
+    "styles": ["/style.css"],
     "url": "https://github.com/League-of-Foundry-Developers/bug-reporter",
     "manifest": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/module.json",
     "download": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/bug-reporter.zip",
