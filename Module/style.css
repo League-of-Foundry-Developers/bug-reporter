@@ -16,6 +16,7 @@
 .bug-report .tag {
   flex: none;
   height: auto;
+  align-self: center;
   border: 1px solid #000;
   border-radius: 3px;
   padding: 0 0.2em;
@@ -31,7 +32,7 @@
 }
 
 .bug-report .tag.warning {
-  background: orange;
+  background: orangered;
 }
 
 .bug-report .tag.error {
@@ -51,6 +52,10 @@
   color: white;
   border-radius: 3px;
   padding: 1em;
+}
+
+.bug-report .found-issues .tag {
+  align-self: flex-start;
 }
 
 .bug-report .found-issue-list {

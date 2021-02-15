@@ -15,7 +15,6 @@ class BugReportForm extends Application {
     options.id = "bug-report";
     options.template = "modules/bug-reporter/templates/bug-report.html";
     options.resizable = true;
-    options.height = 650;
     options.width = 600;
     options.minimizable = true;
     options.title = "Post Your Bugs";
@@ -221,7 +220,7 @@ function getModuleSelection() {
         },
         yes: {
           icon: '<i class="fas fa-check"></i>',
-          label: game.i18n.localize('Proceed'),
+          label: game.i18n.localize('BUG.proceed'),
           callback: (html) => {
             const formValues = {
               selectedModule: html.find('[name="selectedModule"]').val(),
