@@ -21,7 +21,7 @@ class BugReportForm extends FormApplication {
   constructor(app, { selectedModule }) {
     super(app);
     this.endpoint = "https://foundryvttbugreporter.azurewebsites.net/api/ReportBugFunction?code=VCvrWib1lha2nf9Pza7fOaThNTksbmHdEjVhIudCHwXg3zyg4vPprg==";
-    this.module = game.modules.get(selectedModule);
+    this.module = game.modules.get(selectedModule) || game.system;
     this.useBugReporter = this.module.data.allowBugReporter && this.module.data.bugs.includes("github");
 
     this.formFields = {
@@ -243,10 +243,10 @@ class BugReportForm extends FormApplication {
 function getModuleSelection() {
   return new Promise((resolve, reject) => {
     
-    const moduleOptions = [...game.modules.values()]
+    const moduleOptions = [...game.modules.values(), game.system]
       .filter(
         (mod) =>
-          mod.active && !!mod.data.bugs
+          (mod.active || mod.template) && !!mod.data.bugs
       )
       .map((mod) => ({
         title: mod.data.title,
