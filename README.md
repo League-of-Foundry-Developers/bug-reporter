@@ -21,6 +21,14 @@ This module allows users to search for and sometimes create github issues for a 
   "allowBugReporter": true
 ```
 
+#### Rationale:
+> Why are you leveraging an arbitrary, unofficial field on the Manifest instead of providing an API for modules to register themselves?
+
+There is no functional difference between a package which has bug reporter opt-in and one which doesn't. Thus we decided to use a manifest field rather than ask packages to register via API. Some packages might not even register JS at all, such a mechanism would dramatically increase the friction for opting into this service, where a simple manifest field does not.
+
+Being able to report a bug to a compendium package or a css package makes just as much sense as one with JS.
+
+
 ### How does it work?
 
 The module looks at all activated modules and the system which have both `allowBugReporter: true` and a `bugs` field which meets the following criteria in the manifest:
