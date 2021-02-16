@@ -1,12 +1,11 @@
-# League of Foundry VTT Developers Bug Reporter
+# :bug: Bug Reporter
 
-This module allows users to search for and sometimes create github issues for a module within the foundry UI.
+This module allows users to search for and sometimes create github issues for a module or system within the foundry UI.
 
 ## Features
 - Form will display a warning if the user is not up to date first.
-- Any module with a compatible `bugs` url in the manifest will allow searching that module's issue list for matching titles.
-- For opted-in modules, a form within Foundry will submit a bug report.
-- For non-opted-in modules, a link to the module's github issues list will be displayed.
+- Any module or system with a compatible `bugs` url in the manifest will display a link to the module's github issues list will be displayed.
+- For opted-in modules, a form within Foundry will submit a bug report after first searching that package's issue list for similar matches.
 
 ![The Bug Submission Form](/form-flow.png)
 
@@ -24,7 +23,7 @@ This module allows users to search for and sometimes create github issues for a 
 
 ### How does it work?
 
-The module looks at all activated modules which have both `allowBugReporter: true` and a `bugs` field which meets the following criteria in the manifest:
+The module looks at all activated modules and the system which have both `allowBugReporter: true` and a `bugs` field which meets the following criteria in the manifest:
 1. is a Github repo
 2. ends in `/issues`
 
