@@ -22,8 +22,16 @@ class BugReportForm extends FormApplication {
     super(app);
     this.endpoint = "https://foundryvttbugreporter.azurewebsites.net/api/ReportBugFunction?code=VCvrWib1lha2nf9Pza7fOaThNTksbmHdEjVhIudCHwXg3zyg4vPprg==";
     this.module = game.modules.get(selectedModule) || game.system;
-    this.useBugReporter = this.module.data.allowBugReporter && this.module.data.bugs.includes("github");
+    this.github = false;
+    this.gitlab = false;
 
+    if (this.module.data.bugs.includes("github")) {
+      this.github = true;
+    } else if (this.module.data.bugs.includes("gitlab")) {
+      this.gitlab = true;
+    }
+    this.useBugReporter = this.module.data.allowBugReporter && (this.github || this.gitlab);
+    this.endpoints;
     this.formFields = {
       bugTitle: '',
       issuer: '',
@@ -60,14 +68,26 @@ class BugReportForm extends FormApplication {
   }
 
   get endpoints() {
-    const regex = /github.com\/(.+)\/issues/g;
+    let bugs, search;
+    if (this.github) {
+      const regex = /github.com\/(.+)\/issues/g;
 
-    const match = regex.exec(this.module.data.bugs);
+      const match = regex.exec(this.module.data.bugs);
 
-    const repo = match?.[1].toLowerCase();
+      const repo = match?.[1].toLowerCase();
 
-    const bugs = `https://api.github.com/repos/${repo}/issues`;
-    const search = `https://api.github.com/search/issues?q=repo:${repo}`;
+      bugs = `https://api.github.com/repos/${repo}/issues`;
+      search = `https://api.github.com/search/issues?q=repo:${repo}`;
+    } else if (this.gitlab) {
+      const regex = /gitlab.com\/(.+)\/-\/issues/g;
+
+      const match = regex.exec(this.module.data.bugs);
+
+      const repo = match?.[1].toLowerCase();
+
+      bugs = `https://gitlab.com/api/v4/projects/${encodeURIComponent(repo)}/issues`;
+      search = bugs;
+    }
 
     return { bugs: bugs, search: search };
   }
@@ -126,11 +146,13 @@ class BugReportForm extends FormApplication {
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
     const data = {
-      bugs: this.module.data.bugs,
+      bugs: this.endpoints.bugs,
       title: bugTitle,
       description: fullDescription
     }
-
+    // early return to prevent hitting API
+    console.log(data);
+    return;
     this.isSending = true;
     this.render();
 
@@ -177,7 +199,12 @@ class BugReportForm extends FormApplication {
   async search(event) {
     let query = $(event.currentTarget).val();
 
-    let endpoint = `${this.endpoints.search}+"${query}"`;
+    let endpoint;
+    if (this.github) {
+      endpoint = `${this.endpoints.search}+"${query}"`;
+    } else if (this.gitlab) {
+      endpoint = `${this.endpoints.search}?search=${encodeURIComponent(query)}&scope=all`;
+    }
 
     if (query === '') {
       this.element.find("#bug-reporter-issues-found").empty();
@@ -190,14 +217,25 @@ class BugReportForm extends FormApplication {
     });
     const message = await fetchedIssues.json();
 
-    this.foundIssues = message.items.map(
-      ({html_url, state, created_at, title}) => ({
-        html_url,
-        state,
-        openedLabel: new Date(created_at).toLocaleDateString(),
-        title
-      })
-    );
+    if (this.github) {
+      this.foundIssues = message.items.map(
+        ({html_url, state, created_at, title}) => ({
+          html_url,
+          state,
+          openedLabel: new Date(created_at).toLocaleDateString(),
+          title
+        })
+      );
+    } else if (this.gitlab) {
+      this.foundIssues = message.map(
+        ({web_url, state, created_at, title}) => ({
+          html_url: web_url,
+          state,
+          openedLabel: new Date(created_at).toLocaleDateString(),
+          title
+        })
+      );
+    }
 
     this.render();
   }
