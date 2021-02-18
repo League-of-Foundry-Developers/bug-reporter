@@ -13,8 +13,9 @@
 </div>
 
 {{#if useBugReporter}}
+  <!--If game version is supported, hide this -->
   <div class="{{#if unsupportedCore}}{{else}}hidden{{/if}} notification warning">
-    <p>You appear to be using the 0.8.X version of Foundry, this version is in ALPHA and is likely to be unstable.</p>
+    <label>0.8.X versions of Foundry are in ALPHA and are likely to be extremely unstable.</label>
   </div>
 
   <div class="form-group-stacked">
