@@ -70,9 +70,19 @@
     <label>This module is known to conflict with the following:
     <ul>
     {{#each conflicts as | conflict |}}
-      {{log conflict}}
       {{#if conflict.active}}
-        <li>{{conflict.name}}</li>
+        <li>
+            {{conflict.name}}
+            {{#if conflict.versionChecks}}
+              {{#if conflict.conflictingVersion}} 
+                <label class="tag error">{{localize 'BUG.versionCheck.conflict'}}</label>
+              {{else}}
+                <label class="tag success">{{localize 'BUG.versionCheck.safeVer'}}</label>
+              {{/if}}
+            {{else}}
+              <label class="tag warning">{{localize 'BUG.versionCheck.unknown'}}</label>
+            {{/if}}
+        </li>
       {{/if}}
     {{/each}}
     </ul>

@@ -28,7 +28,10 @@
     "versionCheck": {
       "upToDate": "Up to Date",
       "updateRequired": "Update Required",
-      "label": "Version Check"
+      "label": "Version Check",
+      "conflict": "Conflicting Version",
+      "safeVer": "Safe Version",
+      "unknown": "Unknown Status"
     },
     "moduleSelect": {
       "title": "Which Module?",

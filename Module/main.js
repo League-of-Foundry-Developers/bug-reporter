@@ -75,12 +75,25 @@ class BugReportForm extends FormApplication {
   get conflicts() {
     return this.module.data.conflicts.map((conflict) => {
       const mod = game.modules.get(conflict.name);
+      let conflictingVersion = false;
+      let versionChecks = false;
+      // Newer than min, older than max
+      if ("versionMin" in conflict && "versionMax" in conflict) {
+        versionChecks = true;
+        if (isNewerVersion(mod.data.version, conflict.versionMin) && !isNewerVersion(mod.data.version, conflict.versionMax)) {
+          conflictingVersion = true;
+        }
+      } else {
+        versionChecks = false;
+      }
 
       return {
         name: mod.data.title,
         active: mod.active,
         // TODO: Add conflicts min & max version checking
         version: mod.data.version,
+        conflictingVersion,
+        versionChecks,
       }
     })
   }
@@ -242,12 +255,12 @@ class BugReportForm extends FormApplication {
 
         if (!isNewerVersion(message.manifest?.version, this.module.data.version)) {
           // we are up to date
-          this.element.find(".tag.success").removeClass("hidden");
-          this.element.find(".tag.warning").addClass("hidden");
+          this.element.find(".versionCheck .tag.success").removeClass("hidden");
+          this.element.find(".versionCheck .tag.warning").addClass("hidden");
         } else {
           // update required
-          this.element.find(".tag.success").addClass("hidden");
-          this.element.find(".tag.warning").removeClass("hidden");
+          this.element.find(".versionCheck .tag.success").addClass("hidden");
+          this.element.find(".versionCheck .tag.warning").removeClass("hidden");
         }
       });
     });
