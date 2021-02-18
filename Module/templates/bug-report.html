@@ -66,11 +66,10 @@
     </div>
   </div>
 
-  <div class="">
+  <div class="{{#if (bugs-isEmpty conflicts)}}hidden{{/if}}">
     <label>This module is known to conflict with the following:
     <ul>
     {{#each conflicts as | conflict |}}
-      {{log conflict}}
       <li>{{conflict.name}}</li>
     {{/each}}
     </ul>
