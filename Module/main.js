@@ -22,16 +22,11 @@ class BugReportForm extends FormApplication {
     super(app);
     this.endpoint = "https://foundryvttbugreporter.azurewebsites.net/api/ReportBugFunction?code=VCvrWib1lha2nf9Pza7fOaThNTksbmHdEjVhIudCHwXg3zyg4vPprg==";
     this.module = game.modules.get(selectedModule) || game.system;
-    this.github = false;
-    this.gitlab = false;
+    this.github = this.module.data.bugs.includes("github");
+    this.gitlab = this.module.data.bugs.includes("gitlab");
 
-    if (this.module.data.bugs.includes("github")) {
-      this.github = true;
-    } else if (this.module.data.bugs.includes("gitlab")) {
-      this.gitlab = true;
-    }
     this.useBugReporter = this.module.data.allowBugReporter && (this.github || this.gitlab);
-    this.endpoints;
+
     this.formFields = {
       bugTitle: '',
       issuer: '',
@@ -147,7 +142,7 @@ class BugReportForm extends FormApplication {
 
     let bugsUrl = this.endpoints.bugs;
     if (this.gitlab) {
-      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&labels=${label}&description=${encodeURIComponent(fullDescription)}`;
+      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&labels=${encodeURIComponent(label)}&description=${encodeURIComponent(fullDescription)}`;
     }
 
     const data = {
