@@ -70,7 +70,10 @@
     <label>This module is known to conflict with the following:
     <ul>
     {{#each conflicts as | conflict |}}
-      <li>{{conflict.name}}</li>
+      {{log conflict}}
+      {{#if conflict.active}}
+        <li>{{conflict.name}}</li>
+      {{/if}}
     {{/each}}
     </ul>
   </div>

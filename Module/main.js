@@ -72,6 +72,19 @@ class BugReportForm extends FormApplication {
     return { bugs: bugs, search: search };
   }
 
+  get conflicts() {
+    return this.module.data.conflicts.map((conflict) => {
+      const mod = game.modules.get(conflict.name);
+
+      return {
+        name: mod.data.title,
+        active: mod.active,
+        // TODO: Add conflicts min & max version checking
+        version: mod.data.version,
+      }
+    })
+  }
+
   getData() {
     let data = {
       ...super.getData(), 
@@ -83,7 +96,7 @@ class BugReportForm extends FormApplication {
       useBugReporter: this.useBugReporter,
       // if core version > 0.7.10 (like 0.8.X)
       unsupportedCore: isNewerVersion("0.8.0", "0.7.10"),
-      conflicts: this.module.data.conflicts,
+      conflicts: this.conflicts,
     };
 
     return data;
