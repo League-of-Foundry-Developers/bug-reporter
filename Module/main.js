@@ -141,6 +141,7 @@ class BugReportForm extends FormApplication {
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
     let bugsUrl = this.endpoints.bugs;
+    // construct gitlab link (if applicable)
     if (this.gitlab) {
       bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&labels=${encodeURIComponent(label)}&description=${encodeURIComponent(fullDescription)}`;
     }
@@ -150,9 +151,7 @@ class BugReportForm extends FormApplication {
       title: bugTitle,
       description: fullDescription
     }
-    // early return to prevent hitting API
-    console.log(data);
-    return;
+    
     this.isSending = true;
     this.render();
 
@@ -170,6 +169,10 @@ class BugReportForm extends FormApplication {
       .then(async (res) => {
         if (res.status == 201) {
           await res.json().then((message) => {
+            // map response to expected htmlUrl for web link
+            if (this.gitlab) {
+              message.htmlUrl = message.web_url;
+            }
             this.submittedIssue = message;
             console.log(
               "Thank you for your submission. If you wish to monitor or follow up with additional details like screenshots, you can find your issue here:",
