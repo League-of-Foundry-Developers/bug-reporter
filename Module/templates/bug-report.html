@@ -13,6 +13,10 @@
 </div>
 
 {{#if useBugReporter}}
+  <div class="{{#if unsupportedCore}}{{else}}hidden{{/if}} notification warning">
+    <p>You appear to be using the 0.8.X version of Foundry, this version is in ALPHA and is likely to be unstable.</p>
+  </div>
+
   <div class="form-group-stacked">
     <label>{{localize 'BUG.form.bugTitle.label'}}*</label>
     <input type="text" class="bug-title" name="formFields.bugTitle" data-dtype="String" value="{{formFields.bugTitle}}" />

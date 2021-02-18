@@ -81,6 +81,8 @@ class BugReportForm extends FormApplication {
       module: this.module,
       submittedIssue: this.submittedIssue,
       useBugReporter: this.useBugReporter,
+      // if core version > 0.7.10 (like 0.8.X)
+      unsupportedCore: isNewerVersion("0.8.0", "0.7.10"),
     };
 
     return data;
