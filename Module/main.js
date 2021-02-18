@@ -145,8 +145,13 @@ class BugReportForm extends FormApplication {
 
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
+    let bugsUrl = this.endpoints.bugs;
+    if (this.gitlab) {
+      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&labels=${label}&description=${encodeURIComponent(fullDescription)}`;
+    }
+
     const data = {
-      bugs: this.endpoints.bugs,
+      bugs: bugsUrl,
       title: bugTitle,
       description: fullDescription
     }
