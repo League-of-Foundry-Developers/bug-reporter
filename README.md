@@ -1,10 +1,10 @@
 # :bug: Bug Reporter
 
-This module allows users to search for and sometimes create github issues for a module or system within the foundry UI.
+This module allows users to search for and sometimes create github/gitlab issues for a module or system within the foundry UI.
 
 ## Features
 - Form will display a warning if the user is not up to date first.
-- Any module or system with a compatible `bugs` url in the manifest will display a link to the module's github issues list will be displayed.
+- Any module or system with a compatible `bugs` url in the manifest will display a link to the module's github/gitlab issues list will be displayed.
 - For opted-in modules, a form within Foundry will submit a bug report after first searching that package's issue list for similar matches.
 
 ![The Bug Submission Form](/form-flow.png)
@@ -12,12 +12,17 @@ This module allows users to search for and sometimes create github issues for a 
 ## Info for Package Developers
 
 ### How do I opt in?
-1. Have a url to a github repository issues page in the `bugs` field of your manifest.
+1. Have a url to a github or gitlab repository issues page in the `bugs` field of your manifest.
 2. Add `allowBugReporter: true` to your manifest json.
 
 #### Example:
 ```md
   "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
+  "allowBugReporter": true
+```
+
+```md
+  "bugs": "https://gitlab.com/Ethck/testing/-/issues",
   "allowBugReporter": true
 ```
 
@@ -32,10 +37,10 @@ Being able to report a bug to a compendium package or a css package makes just a
 ### How does it work?
 
 The module looks at all activated modules and the system which have both `allowBugReporter: true` and a `bugs` field which meets the following criteria in the manifest:
-1. is a Github repo
+1. is a Github or Gitlab repo
 2. ends in `/issues`
 
-If both of these are met, the form is submittable to our API endpoint which first runs some sanity checks against malicious intent before submitting the issue via Github's API. All of the bugs submitted will come from the [`leagueoffoundryvttdevs`](https://github.com/leagueoffoundryvttdevs) account.
+If both of these are met, the form is submittable to our API endpoint which first runs some sanity checks against malicious intent before submitting the issue via Github's/Gitlab's API. All of the bugs submitted will come from the [`leagueoffoundryvttdevs`](https://github.com/leagueoffoundryvttdevs) account on Github, or from the [`leagueoffvttdevs`](https://gitlab.com/leagueoffvttdevs) account on Gitlab.
 
 
 

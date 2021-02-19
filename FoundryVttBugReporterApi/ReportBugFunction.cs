@@ -13,11 +13,14 @@ using Octokit.Internal;
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace FoundryVttBugReporterApi
 {
     public static class ReportBugFunction
     {
+        private static HttpClient _httpClient = null;
+
         [FunctionName("ReportBugFunction")]
         public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
@@ -38,7 +41,25 @@ namespace FoundryVttBugReporterApi
                 };
             }
 
+            if (report.RepositoryUrl.Contains("gitlab.com"))
+            {
+                return await CreateGitlabBug(report);
+            }
 
+            var githubUrlRegex = new Regex(@"github\.com\/([A-z|\-|1-9]*)\/([A-z|\-|1-9]*)");
+            if (!githubUrlRegex.IsMatch(report.RepositoryUrl))
+            {
+                return new ObjectResult(report.RepositoryUrl + " does not seem to be a correct Github URL")
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+
+            return await CreateGithubBug(report, githubUrlRegex);
+        }
+
+        private static async Task<IActionResult> CreateGithubBug(BugReport report, Regex githubUrlRegex)
+        {
             var github = CreateGithubClient();
             var issue = new NewIssue(report.Title)
             {
@@ -53,17 +74,7 @@ namespace FoundryVttBugReporterApi
                     issue.Body += $"**Module Version: ** ${report.VersionInformation.Module}\n";
                 }
             }
-
             issue.Body += "\n" + report.Body;
-
-            var githubUrlRegex = new Regex(@"github\.com\/([A-z|\-|1-9]*)\/([A-z|\-|1-9]*)");
-            if (!githubUrlRegex.IsMatch(report.RepositoryUrl))
-            {
-                return new ObjectResult(report.RepositoryUrl + " does not seem to be a correct Github URL")
-                {
-                    StatusCode = StatusCodes.Status400BadRequest
-                };
-            }
 
             var match = githubUrlRegex.Match(report.RepositoryUrl);
             var owner = match.Groups.Values.ElementAt(1).Value;
@@ -74,6 +85,36 @@ namespace FoundryVttBugReporterApi
                 var createdIssue = await github.Issue.Create(owner, repo, issue);
 
                 return new ObjectResult(createdIssue)
+                {
+                    StatusCode = StatusCodes.Status201Created
+                };
+            }
+            catch (Exception e)
+            {
+                return new ObjectResult(e)
+                {
+                    StatusCode = StatusCodes.Status500InternalServerError
+                };
+            }
+        }
+
+        private static async Task<IActionResult> CreateGitlabBug(BugReport report)
+        {
+            try
+            {
+                if (_httpClient == null)
+                {
+                    _httpClient = new HttpClient();
+                    _httpClient.DefaultRequestHeaders.Add("PRIVATE-TOKEN", Environment.GetEnvironmentVariable("GitlabPAT"));
+                }
+                
+                var result = await _httpClient.PostAsync(report.RepositoryUrl, new StringContent(""));
+
+                if (!result.IsSuccessStatusCode) throw new Exception(result.StatusCode + " " + result.ReasonPhrase);
+
+                var response = await result.Content.ReadAsStringAsync();
+
+                return new ObjectResult(response)
                 {
                     StatusCode = StatusCodes.Status201Created
                 };
