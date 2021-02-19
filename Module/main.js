@@ -143,7 +143,7 @@ class BugReportForm extends FormApplication {
     let bugsUrl = this.endpoints.bugs;
     // construct gitlab link (if applicable)
     if (this.gitlab) {
-      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&labels=${encodeURIComponent(label)}&description=${encodeURIComponent(fullDescription)}`;
+      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription)}`;
     }
 
     const data = {
