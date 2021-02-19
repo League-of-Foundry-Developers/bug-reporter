@@ -73,7 +73,7 @@ class BugReportForm extends FormApplication {
   }
 
   get conflicts() {
-    return this.module.data.conflicts.map((conflict) => {
+    return this.module.data.conflicts?.map((conflict) => {
       const mod = game.modules.get(conflict.name);
       let conflictingVersion = false;
       let versionChecks = false;
@@ -108,7 +108,7 @@ class BugReportForm extends FormApplication {
       submittedIssue: this.submittedIssue,
       useBugReporter: this.useBugReporter,
       // if core version > 0.7.10 (like 0.8.X)
-      unsupportedCore: isNewerVersion("0.8.0", "0.7.10"),
+      unsupportedCore: isNewerVersion(game.data.version, "0.7.10"),
       conflicts: this.conflicts,
     };
 

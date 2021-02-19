@@ -14,9 +14,11 @@
 
 {{#if useBugReporter}}
   <!--If game version is supported, hide this -->
-  <div class="{{#if unsupportedCore}}{{else}}hidden{{/if}} notification warning">
+  {{#if unsupportedCore}}
+  <div class="notification warning">
     <label>0.8.X versions of Foundry are in ALPHA and are likely to be extremely unstable.</label>
   </div>
+  {{/if}}
 
   <div class="form-group-stacked">
     <label>{{localize 'BUG.form.bugTitle.label'}}*</label>
@@ -69,12 +71,12 @@
   <div class="{{#if (bugs-isEmpty conflicts)}}hidden{{/if}}">
     <label>This module is known to conflict with the following:
     <ul>
-    {{#each conflicts as | conflict |}}
-      {{#if conflict.active}}
+    {{#each conflicts}}
+      {{#if active}}
         <li>
-            {{conflict.name}}
-            {{#if conflict.versionChecks}}
-              {{#if conflict.conflictingVersion}} 
+            {{name}}
+            {{#if versionChecks}}
+              {{#if conflictingVersion}} 
                 <label class="tag error">{{localize 'BUG.versionCheck.conflict'}}</label>
               {{else}}
                 <label class="tag success">{{localize 'BUG.versionCheck.safeVer'}}</label>

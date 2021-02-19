@@ -31,7 +31,7 @@
       "label": "Version Check",
       "conflict": "Conflicting Version",
       "safeVer": "Safe Version",
-      "unknown": "Unknown Status"
+      "unknown": "Conflicting Module"
     },
     "moduleSelect": {
       "title": "Which Module?",
