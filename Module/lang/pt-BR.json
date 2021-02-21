@@ -1,0 +1,51 @@
+{
+  "BUG": {
+    "form": {
+      "bugTitle": {
+        "label": "Título"
+      },
+      "issuer": {
+        "label": "Seu Nome (não é necessário)",
+        "placeholder": "Discord, email, qualquer forma de contatar você."
+      },
+      "issueLabel": {
+        "label": "Rótulo",
+        "options": {
+          "bug": "Bug",
+          "enhancement": "Modificação",
+          "translation": "Tradução",
+          "incompatibility": "Incompatibilidade"
+        }
+      },
+      "bugDescription": {
+        "label": "Descrição",
+        "placeholder": "O que aconteceu, como reproduzir, etc."
+      },
+      "errors": {
+        "incomplete": "Por favor, termine de preencher os campos requeridos."
+      }
+    },
+    "versionCheck": {
+      "upToDate": "Atualizado",
+      "updateRequired": "Atualização Necessária",
+      "label": "Checando Versão",
+      "conflict": "Versão Conflitante",
+      "safeVer": "Versão Segura",
+      "unknown": "Módulo Conflitante"
+    },
+    "moduleSelect": {
+      "title": "Qual módulo?",
+      "helper": "Escolha um módulo para prosseguir. Se o seu módulo não está na lista, ele provavelmente não tem o campo 'bugs' no seu manifesto."
+    },
+    "foundIssues": {
+      "title": "Problemas Potencialmente Similares",
+      "none": "Nenhuma encontrada."
+    },
+    "unsupported": "O autor desde módulo não habilitou a funcionalidade do Bug Reporter.",
+    "submitHere": "Por favor, envie seus bugs aqui:",
+    "submitted": "Problema criado, você pode vê-lo aqui:",
+    "error": "Um erro aconteceu ao criar seu problema, veja o console para detalhes.",
+    "proceed": "Continuar",
+    "submit": "Enviar"
+  }
+}
