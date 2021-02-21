@@ -25,6 +25,9 @@
         "incomplete": "Please finish filling out required values."
       }
     },
+    "bugButton": {
+      "label": "Post Bug"
+    },
     "versionCheck": {
       "upToDate": "Up to Date",
       "updateRequired": "Update Required",

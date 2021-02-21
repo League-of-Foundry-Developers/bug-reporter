@@ -363,7 +363,7 @@ function getModuleSelection() {
 Hooks.once("init", () => {
   Hooks.on("renderSidebarTab", async (app, html) => {
     if (app.options.id == "settings") {
-      let button = $(`<button class='bug-report'>Post Bug</button>`);
+      let button = $(`<button class='bug-report'>${game.i18n.localize('BUG.bugButton.label')}</button>`);
 
       button.click(async (ev) => {
         const { selectedModule } = await getModuleSelection();

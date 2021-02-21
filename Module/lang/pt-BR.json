@@ -5,7 +5,7 @@
         "label": "Título"
       },
       "issuer": {
-        "label": "Seu Nome (não é necessário)",
+        "label": "Seu Nome (não obrigatório)",
         "placeholder": "Discord, email, qualquer forma de contatar você."
       },
       "issueLabel": {
@@ -22,8 +22,11 @@
         "placeholder": "O que aconteceu, como reproduzir, etc."
       },
       "errors": {
-        "incomplete": "Por favor, termine de preencher os campos requeridos."
+        "incomplete": "Por favor, termine de preencher os campos obrigatórios."
       }
+    },
+    "bugButton": {
+      "label": "Enviar Bug"
     },
     "versionCheck": {
       "upToDate": "Atualizado",
