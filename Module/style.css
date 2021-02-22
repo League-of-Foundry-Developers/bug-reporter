@@ -1,3 +1,11 @@
+/* Bug Report Button */
+#settings button.bug-report {
+  margin-left: 8px;
+  margin-right: 8px;
+  width: calc(100% - 16px);
+}
+
+/* Bug Report Application */
 .bug-report .window-content {
   position: relative;
 }
