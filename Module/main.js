@@ -71,7 +71,7 @@ class BugReportForm extends FormApplication {
 
       const repo = match?.[1].toLowerCase();
 
-      bugs = `https://api.github.com/repos/${repo}/issues`;
+      bugs = this.module.data.bugs;
       search = `https://api.github.com/search/issues?q=repo:${repo}`;
     } else if (this.gitlab) {
       const regex = /gitlab.com\/(.+)\/-\/issues/g;
