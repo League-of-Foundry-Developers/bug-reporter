@@ -75,15 +75,15 @@
       {{#each conflicts}}
         {{#if active}}
           <li>
-              {{name}} v{{version}}
+              {{name}} v{{version}}</br>
               {{#if versionChecks}}
                 {{#if conflictingVersion}} 
-                  <p class="tag error">{{localize 'BUG.versionCheck.conflict'}}</p>
+                  <label class="tag error">{{localize 'BUG.versionCheck.conflict'}}</label>
                 {{else}}
-                  <p class="tag success">{{localize 'BUG.versionCheck.safeVer'}}</p>
+                  <label class="tag success">{{localize 'BUG.versionCheck.safeVer'}}</label>
                 {{/if}}
               {{else}}
-                <p class="tag warning">{{localize 'BUG.versionCheck.unknown'}}</p>
+                <label class="tag warning">{{localize 'BUG.versionCheck.unknown'}}</label>
               {{/if}}
           </li>
         {{/if}}
@@ -97,11 +97,11 @@
       {{#each dependencies}}
         {{#if active}}
           <li>
-              {{name}} v{{version}}
+              {{name}} v{{version}}</br>
                 {{#if upToDate}} 
-                  <p class="tag success">{{localize 'BUG.versionCheck.upToDate'}}</p>
+                  <label class="tag success">{{localize 'BUG.versionCheck.upToDate'}}</label>
                 {{else}}
-                  <p class="tag warning">{{localize 'BUG.versionCheck.updateRequired'}}</p>
+                  <label class="tag warning">{{localize 'BUG.versionCheck.updateRequired'}}</label>
                 {{/if}}
           </li>
         {{/if}}
