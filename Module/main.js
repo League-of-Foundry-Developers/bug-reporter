@@ -113,6 +113,30 @@ class BugReportForm extends FormApplication {
     })
   }
 
+  get dependencies() {
+    return this.module.data.dependencies?.map((dependency) => {
+      const mod = game.modules.get(dependency.name);
+      let upToDate;
+
+      let remote = this.checkVer(mod);
+
+      if (!isNewerVersion(remote.manifest?.version, mod.data.version)) {
+        // we are up to date
+        upToDate = true;
+      } else {
+        // update required
+        upToDate = false;
+      }
+
+      return {
+        name: mod.data.title,
+        active: mod.active,
+        version: mod.data.version,
+        upToDate
+      }
+    })
+  }
+
   getData() {
     let data = {
       ...super.getData(), 
@@ -125,6 +149,7 @@ class BugReportForm extends FormApplication {
       // if core version > 0.7.10 (like 0.8.X)
       unsupportedCore: isNewerVersion(game.data.version, "0.7.10"),
       conflicts: this.conflicts,
+      dependencies: this.dependencies,
     };
 
     return data;
@@ -166,6 +191,13 @@ class BugReportForm extends FormApplication {
       `**System:** ${game.system.id} v${game.system.data.version}`,
       `**Module Version:** ${mod.data.name} v${mod.data.version}`
     ];
+
+    // If any dependencies are present
+    this.dependencies.forEach((depend) => {
+      if (depend.active) {
+        versions.push(`**Dependency Version:** ${depend.name} v${depend.version}`);
+      }
+    });
 
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
@@ -279,32 +311,41 @@ class BugReportForm extends FormApplication {
       this.close();
     }.bind(this));
 
-    this.checkVer();
+    let message = this.checkVer(this.module);
+    this.updateStatus(message);
   }
 
-  async checkVer() {
+  async checkVer(mod) {
     fetch(
       "https://forge-vtt.com/api/bazaar/manifest/" +
-      this.module.data.name +
+      mod.data.name +
         "?coreVersion=" +
         game.data.version
     ).then((res) => {
       res.json().then((message) => {
-        if (message.manifest === null) {
-          return;
-        }
-
-        if (!isNewerVersion(message.manifest?.version, this.module.data.version)) {
-          // we are up to date
-          this.element.find(".versionCheck .tag.success").removeClass("hidden");
-          this.element.find(".versionCheck .tag.warning").addClass("hidden");
-        } else {
-          // update required
-          this.element.find(".versionCheck .tag.success").addClass("hidden");
-          this.element.find(".versionCheck .tag.warning").removeClass("hidden");
-        }
+        return message;
       });
     });
+  }
+
+  /**
+   * Takes a response from checkVer() and updates the UI to reflect updated status
+   * @param  {object} message result of checkVer(this.module)
+   */
+  updateStatus(message) {
+    if (message.manifest === null) {
+      return;
+    }
+
+    if (!isNewerVersion(message.manifest?.version, this.module.data.version)) {
+      // we are up to date
+      this.element.find(".versionCheck .tag.success").removeClass("hidden");
+      this.element.find(".versionCheck .tag.warning").addClass("hidden");
+    } else {
+      // update required
+      this.element.find(".versionCheck .tag.success").addClass("hidden");
+      this.element.find(".versionCheck .tag.warning").removeClass("hidden");
+    }
   }
 
 }

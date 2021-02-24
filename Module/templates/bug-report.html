@@ -68,26 +68,46 @@
     </div>
   </div>
 
-  <div class="{{#if (bugs-isEmpty conflicts)}}hidden{{/if}}">
-    <label>This module is known to conflict with the following:
-    <ul>
-    {{#each conflicts}}
-      {{#if active}}
-        <li>
-            {{name}}
-            {{#if versionChecks}}
-              {{#if conflictingVersion}} 
-                <label class="tag error">{{localize 'BUG.versionCheck.conflict'}}</label>
+  <div class="flexrow">
+    <div class="{{#if (bugs-isEmpty conflicts)}}hidden{{/if}}">
+      <label>Module Conflicts
+      <ul>
+      {{#each conflicts}}
+        {{#if active}}
+          <li>
+              {{name}} v{{version}}</br>
+              {{#if versionChecks}}
+                {{#if conflictingVersion}} 
+                  <label class="tag error">{{localize 'BUG.versionCheck.conflict'}}</label>
+                {{else}}
+                  <label class="tag success">{{localize 'BUG.versionCheck.safeVer'}}</label>
+                {{/if}}
               {{else}}
-                <label class="tag success">{{localize 'BUG.versionCheck.safeVer'}}</label>
+                <label class="tag warning">{{localize 'BUG.versionCheck.unknown'}}</label>
               {{/if}}
-            {{else}}
-              <label class="tag warning">{{localize 'BUG.versionCheck.unknown'}}</label>
-            {{/if}}
-        </li>
-      {{/if}}
-    {{/each}}
-    </ul>
+          </li>
+        {{/if}}
+      {{/each}}
+      </ul>
+    </div>
+
+    <div class="{{#if (bugs-isEmpty dependencies)}}hidden{{/if}}">
+      <label>Module Dependencies
+      <ul>
+      {{#each dependencies}}
+        {{#if active}}
+          <li>
+              {{name}} v{{version}}</br>
+                {{#if upToDate}} 
+                  <label class="tag success">{{localize 'BUG.versionCheck.upToDate'}}</label>
+                {{else}}
+                  <label class="tag warning">{{localize 'BUG.versionCheck.updateRequired'}}</label>
+                {{/if}}
+          </li>
+        {{/if}}
+      {{/each}}
+      </ul>
+    </div>
   </div>
 
   <div class="form-group-stacked">
