@@ -213,9 +213,6 @@ class BugReportForm extends FormApplication {
           `${modSettings.join(",\n")}\n` +
           "\`\`\`\n" +
       "</details>\n";
-      
-
-    console.log(modSettingsMd);
 
     // If any dependencies are present
     this.dependencies.forEach((depend) => {
@@ -235,13 +232,10 @@ class BugReportForm extends FormApplication {
     const data = {
       bugs: bugsUrl,
       title: bugTitle,
-      description: fullDescription,
-      modSettings,
-      modSettingsMd
+      description: fullDescription
     }
 
-    console.log(data);
-    return;
+
     this.isSending = true;
     this.render();
 
@@ -254,6 +248,7 @@ class BugReportForm extends FormApplication {
         title: data.title,
         body: data.description,
         repo: data.bugs,
+        moduleSettings: modSettingsMd
       }),
     })
       .then(async (res) => {
