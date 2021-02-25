@@ -195,15 +195,14 @@ class BugReportForm extends FormApplication {
     let modSettings = [];
     game.settings.settings.forEach((setting) => {
       if (setting.module === mod.data.name) {
-        modSettings.push(setting.key);
+        if (setting.config && setting.type !== "object") {
+          modSettings.push(setting.key);
+        }
       }
     });
 
     modSettings = modSettings.map((key) => {
       let setting = game.settings.get(mod.data.name, key);
-      if (typeof setting === "object" && setting !== null) {
-        setting = JSON.stringify(setting);
-      }
       return `${key}: ${setting}`;
     });
 
@@ -211,7 +210,7 @@ class BugReportForm extends FormApplication {
       "<details>\n" +
         "<summary>Module Settings</summary>\n\n" +
           "\`\`\`js\n" +  
-          `${modSettings.join("\n")}\n` +
+          `${modSettings.join(",\n")}\n` +
           "\`\`\`\n" +
       "</details>\n";
       
