@@ -192,6 +192,32 @@ class BugReportForm extends FormApplication {
       `**Module Version:** ${mod.data.name} v${mod.data.version}`
     ];
 
+    let modSettings = [];
+    game.settings.settings.forEach((setting) => {
+      if (setting.module === mod.data.name) {
+        modSettings.push(setting.key);
+      }
+    });
+
+    modSettings = modSettings.map((key) => {
+      let setting = game.settings.get(mod.data.name, key);
+      if (typeof setting === "object" && setting !== null) {
+        setting = JSON.stringify(setting);
+      }
+      return `${key}: ${setting}`;
+    });
+
+    const modSettingsMd = 
+      "<details>\n" +
+        "<summary>Module Settings</summary>\n\n" +
+          "\`\`\`js\n" +  
+          `${modSettings.join("\n")}\n` +
+          "\`\`\`\n" +
+      "</details>\n";
+      
+
+    console.log(modSettingsMd);
+
     // If any dependencies are present
     this.dependencies.forEach((depend) => {
       if (depend.active) {
@@ -210,9 +236,13 @@ class BugReportForm extends FormApplication {
     const data = {
       bugs: bugsUrl,
       title: bugTitle,
-      description: fullDescription
+      description: fullDescription,
+      modSettings,
+      modSettingsMd
     }
-    
+
+    console.log(data);
+    return;
     this.isSending = true;
     this.render();
 
