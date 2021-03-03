@@ -12,6 +12,14 @@ Handlebars.registerHelper('bugs-isEmpty', (input) => {
   return isObjectEmpty(input);
 });
 
+const generateActiveModuleList = (separator = "--") => {
+    let schema = `<details>\n<summary>Active Modules</summary>\n{REPL_MODULES}\n</details>`;
+    let data = [];
+    let activeModules = [...game.modules].filter(([name, opts]) => opts.active);
+    activeModules.forEach(([name, opts]) => data = [...data, `${name}${separator}${opts.data.version};`]);
+    return schema.replace(/{REPL_MODULES}/gi, data.join("\n"));
+}
+
 
 /**
  * Based off of Moo Man's Excellent WFRP4e Bug Reporter
@@ -192,7 +200,9 @@ class BugReportForm extends FormApplication {
       `**Module Version:** ${mod.data.name} v${mod.data.version}`
     ];
 
-    // If any dependencies are present
+    // generating active module list from game.modules
+    const moduleList = generateActiveModuleList();
+
     this.dependencies.forEach((depend) => {
       if (depend.active) {
         versions.push(`**Dependency Version:** ${depend.name} v${depend.version}`);
@@ -225,6 +235,7 @@ class BugReportForm extends FormApplication {
         title: data.title,
         body: data.description,
         repo: data.bugs,
+        moduleList
       }),
     })
       .then(async (res) => {
