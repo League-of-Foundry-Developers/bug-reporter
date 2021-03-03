@@ -12,11 +12,11 @@ Handlebars.registerHelper('bugs-isEmpty', (input) => {
   return isObjectEmpty(input);
 });
 
-const generateActiveModuleList = (separator = "--") => {
+const generateActiveModuleList = (separator = "--", versionMarker = "v") => {
     let schema = `<details>\n<summary>Active Modules</summary>\n{REPL_MODULES}\n</details>`;
     let data = [];
     let activeModules = [...game.modules].filter(([name, opts]) => opts.active);
-    activeModules.forEach(([name, opts]) => data = [...data, `${name}${separator}${opts.data.version};`]);
+    activeModules.forEach(([name, opts]) => data = [...data, `${name}${separator}${versionMarker}${opts.data.version};`]);
     return schema.replace(/{REPL_MODULES}/gi, data.join("\n"));
 }
 
