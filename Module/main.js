@@ -200,9 +200,7 @@ class BugReportForm extends FormApplication {
       `**Module Version:** ${mod.data.name} v${mod.data.version}`
     ];
 
-    // generating active module list from game.modules
-    const moduleList = generateActiveModuleList();
-
+    // If any dependencies are present
     this.dependencies.forEach((depend) => {
       if (depend.active) {
         versions.push(`**Dependency Version:** ${depend.name} v${depend.version}`);
@@ -222,6 +220,9 @@ class BugReportForm extends FormApplication {
       title: bugTitle,
       description: fullDescription
     }
+
+    // generating active module list from game.modules
+    const moduleList = generateActiveModuleList();
     
     this.isSending = true;
     this.render();
