@@ -1,4 +1,6 @@
 
+// Namespaced isEmpty handlebars helper for testing if
+// a given input is does not contain additional values
 Handlebars.registerHelper('bugs-isEmpty', (input) => {
   if (!input) {
     return true;
@@ -48,15 +50,16 @@ class BugReportForm extends FormApplication {
     this.submittedIssue = undefined;
   }
 
+  // helper for rendering spinner
 	get isEditable() {
 	  return this.options.editable && !this.isSending && !this.submittedIssue;
   }
 
+  // render options for our FormApplication
   static get defaultOptions() {
     const options = {
       ...super.defaultOptions,
       closeOnSubmit: false,
-
       classes: ['bug-report'],
       submitOnChange: false,
       submitOnClose: false,
@@ -70,9 +73,25 @@ class BugReportForm extends FormApplication {
     return options;
   }
 
+  /**
+   * bugs endpoint is the html version for Github
+   * and the api version for Gitlab
+   * search endpoint is the api version for Github
+   * and the html version for Gitlab
+   *
+   * This is due to the server using a Github library
+   * but not a Gitlab library (for ease of use)
+   *
+   * SPEC: https://docs.github.com/en/rest/reference/issues
+   * SPEC: https://docs.gitlab.com/ee/api/issues.html
+   *
+   * @return {object} Dictionary containing bugs and search urls
+   */
   get endpoints() {
     let bugs, search;
+    // Github
     if (this.github) {
+      // https://github.com/user/repo/issues
       const regex = /github.com\/(.+)\/issues/g;
 
       const match = regex.exec(this.module.data.bugs);
@@ -81,7 +100,9 @@ class BugReportForm extends FormApplication {
 
       bugs = this.module.data.bugs;
       search = `https://api.github.com/search/issues?q=repo:${repo}`;
+    // Gitlab
     } else if (this.gitlab) {
+      // https://gitlab.com/user/repo/-/issues
       const regex = /gitlab.com\/(.+)\/-\/issues/g;
 
       const match = regex.exec(this.module.data.bugs);
@@ -95,14 +116,25 @@ class BugReportForm extends FormApplication {
     return { bugs: bugs, search: search };
   }
 
+  /**
+   * Search our module's manifest for any known conflicts
+   * For each conflict determine if the conflict is based
+   * on a certain version, or if the conflict is with the
+   * module in general.
+   *
+   * SPEC: https://foundryvtt.wiki/en/development/manifest-plus#conflicts
+   * 
+   * @return {object} conflicts, version, update status
+   */
   get conflicts() {
     return this.module.data.conflicts?.map((conflict) => {
       const mod = game.modules.get(conflict.name);
       let conflictingVersion = false;
       let versionChecks = false;
-      // Newer than min, older than max
+      // Check if utilizing option versionMin / versionMax fields
       if ("versionMin" in conflict && "versionMax" in conflict) {
         versionChecks = true;
+        // find if current module version is within the versionMin and versionMax fields
         if (isNewerVersion(mod.data.version, conflict.versionMin) && !isNewerVersion(mod.data.version, conflict.versionMax)) {
           conflictingVersion = true;
         }
@@ -113,7 +145,6 @@ class BugReportForm extends FormApplication {
       return {
         name: mod.data.title,
         active: mod.active,
-        // TODO: Add conflicts min & max version checking
         version: mod.data.version,
         conflictingVersion,
         versionChecks,
@@ -121,13 +152,21 @@ class BugReportForm extends FormApplication {
     })
   }
 
+  /**
+   * Search the module's manifest for known dependencies
+   * and determine if they are up to date or not.
+   *
+   * SPEC: https://foundryvtt.com/article/module-development/
+   * 
+   * @return {object} dependencies, their version, and update status
+   */
   get dependencies() {
     return this.module.data.dependencies?.map((dependency) => {
       const mod = game.modules.get(dependency.name);
       let upToDate;
-
+      // get remote manifest
       let remote = this.checkVer(mod);
-
+      // determine status
       if (!isNewerVersion(remote.manifest?.version, mod.data.version)) {
         // we are up to date
         upToDate = true;
@@ -135,7 +174,7 @@ class BugReportForm extends FormApplication {
         // update required
         upToDate = false;
       }
-
+      // assemble return
       return {
         name: mod.data.title,
         active: mod.active,
@@ -145,9 +184,18 @@ class BugReportForm extends FormApplication {
     })
   }
 
+  /**
+   * Data supplied to the handlebars template when it is rendered
+   * conflicts, dependencies, and isSending are get methods that are
+   * automaticall called when their respective properties are accessed
+   * 
+   * @return {object} combined object for handlebars template to use
+   */
   getData() {
     let data = {
       ...super.getData(), 
+      conflicts: this.conflicts,
+      dependencies: this.dependencies,
       formFields: this.formFields,
       foundIssues: this.foundIssues,
       isSending: this.isSending,
@@ -156,8 +204,6 @@ class BugReportForm extends FormApplication {
       useBugReporter: this.useBugReporter,
       // if core version > 0.7.10 (like 0.8.X)
       unsupportedCore: isNewerVersion(game.data.version, "0.7.10"),
-      conflicts: this.conflicts,
-      dependencies: this.dependencies,
     };
 
     return data;
@@ -165,6 +211,7 @@ class BugReportForm extends FormApplication {
 
   /**
    * override
+   * Calls search when we change away from the bugTitle field
    */
   _onChangeInput(event) {
     const el = event.target;
@@ -178,7 +225,14 @@ class BugReportForm extends FormApplication {
     }
   }
 
+  /**
+   * Assemble the request for the server, send it, and
+   * recieve the response
+   * @param  {[type]} ev       Provided by Foundry, not used
+   * @param  {[type]} formData HTML formData (includes all input elements with their values)
+   */
   async _updateObject(ev, formData) {
+    // obtain original data
     const mod = this.module;
     const {formFields: { bugTitle, bugDescription, issuer, label }} = expandObject(formData);
 
@@ -189,24 +243,51 @@ class BugReportForm extends FormApplication {
 
       throw errorMessage;
     }
-    
+    // assemble header strings
     const descriptionString = `**Description**:\n${bugDescription}`;
     const issuerString = issuer ? `**Submitted By**: ${issuer}` : '';
     const labelString = label ? `**Feedback Type**: ${label}` : '';
 
+    // find and assemble version details
     const versions = [
       `**Core:** ${game.data.version}`,
       `**System:** ${game.system.id} v${game.system.data.version}`,
       `**Module Version:** ${mod.data.name} v${mod.data.version}`
     ];
 
-    // If any dependencies are present
+    // Find all keys in settings that belong to our module
+    // only add scalars
+    let modSettings = [];
+    game.settings.settings.forEach((setting) => {
+      if (setting.module === mod.data.name) {
+        if (setting.config && setting.type !== "object") {
+          modSettings.push(setting.key);
+        }
+      }
+    });
+    // retrieve the setting and apply some formatting
+    modSettings = modSettings.map((key) => {
+      let setting = game.settings.get(mod.data.name, key);
+      return `${key}: ${setting}`;
+    });
+
+    // collapsible field for module settings
+    const modSettingsMd = 
+      "<details>\n" +
+        "<summary>Module Settings</summary>\n\n" +
+          "\`\`\`js\n" +  
+          `${modSettings.join(",\n")}\n` +
+          "\`\`\`\n" +
+      "</details>\n";
+
+    // If any dependencies are present, add their details
     this.dependencies.forEach((depend) => {
       if (depend.active) {
         versions.push(`**Dependency Version:** ${depend.name} v${depend.version}`);
       }
     });
 
+    // make user inputted data one string
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
     let bugsUrl = this.endpoints.bugs;
@@ -223,10 +304,12 @@ class BugReportForm extends FormApplication {
 
     // generating active module list from game.modules
     const moduleList = generateActiveModuleList();
-    
+
+    // let the app know we're ready to send stuff
     this.isSending = true;
     this.render();
 
+    // forward request to server
     await fetch(this.endpoint, {
       method: "POST",
       headers: {
@@ -236,16 +319,20 @@ class BugReportForm extends FormApplication {
         title: data.title,
         body: data.description,
         repo: data.bugs,
-        moduleList
+        moduleList,
+        moduleSettings: modSettingsMd
       }),
     })
+    // wait for the response
       .then(async (res) => {
+        // if successful
         if (res.status == 201) {
           await res.json().then((message) => {
             // map response to expected htmlUrl for web link
             if (this.gitlab) {
               message.htmlUrl = message.web_url;
             }
+            // Completed!
             this.submittedIssue = message;
             console.log(
               "Thank you for your submission. If you wish to monitor or follow up with additional details like screenshots, you can find your issue here:",
@@ -263,6 +350,7 @@ class BugReportForm extends FormApplication {
         ui.notifications.error("Something went wrong.");
         console.error(err);
       })
+      // stop the spinner, show final product
       .finally(() => {
         this.isSending = false;
         this.render();
@@ -270,29 +358,31 @@ class BugReportForm extends FormApplication {
   }
 
   /**
-   * Get Issues from GH and put into this.foundIssues, then this.render();
+   * Get Issues from GH / GL and put into this.foundIssues, then this.render();
    */
   async search(event) {
     let query = $(event.currentTarget).val();
 
     let endpoint;
+    // construct search endpoint with queries
     if (this.github) {
       endpoint = `${this.endpoints.search}+"${query}"`;
     } else if (this.gitlab) {
       endpoint = `${this.endpoints.search}?search=${encodeURIComponent(query)}&scope=all`;
     }
-
+    // if no results, don't show anything
     if (query === '') {
       this.element.find("#bug-reporter-issues-found").empty();
       this.element.find('.found-issues').addClass('hidden');
       return;
     }
-
+    // retrieve similar issues
     const fetchedIssues = await fetch(endpoint, {
       method: "GET",
     });
     const message = await fetchedIssues.json();
 
+    // map our found issues into a similar format
     if (this.github) {
       this.foundIssues = message.items.map(
         ({html_url, state, created_at, title}) => ({
@@ -313,6 +403,7 @@ class BugReportForm extends FormApplication {
       );
     }
 
+    // show similar issues
     this.render();
   }
 
@@ -327,6 +418,11 @@ class BugReportForm extends FormApplication {
     this.updateStatus(message);
   }
 
+  /**
+   * Utilizes the Forge's API to determine the remote version of a module.
+   * @param  {object} mod Foundry Module object
+   * @return {object}     Wrapper for the most current manifest for the module
+   */
   async checkVer(mod) {
     fetch(
       "https://forge-vtt.com/api/bazaar/manifest/" +
@@ -362,21 +458,30 @@ class BugReportForm extends FormApplication {
 
 }
 
-
+/**
+ * Dialog that presents the user a choice of which module they would like to 
+ * report a bug, make a suggestion, etc. for. This list is filtered to only
+ * modules that have explicitly allowed Bug Reporter to work with them.
+ * @return {Promise} Chosen module's name
+ */
 function getModuleSelection() {
   return new Promise((resolve, reject) => {
-    
+    // filter modules to only modules & sytem that have a bugs field
+    // and is active
     const moduleOptions = [...game.modules.values(), game.system]
       .filter(
         (mod) =>
           (mod.active || mod.template) && !!mod.data.bugs
       )
+      // we don't need all of the info, just these bits
       .map((mod) => ({
         title: mod.data.title,
         name: mod.data.name,
       })
     );
 
+    // spawn an interactive HTML form inside Foundry
+    // with buttons and localization!
     new Dialog({
       title: game.i18n.localize('BUG.moduleSelect.title'),
       content: `
@@ -413,16 +518,19 @@ function getModuleSelection() {
   });
 }
 
+// Once Foundry has initialized, add our Hook to listen for sidebar render
 Hooks.once("init", () => {
   Hooks.on("renderSidebarTab", async (app, html) => {
+    // Add our special Post Bug label
     if (app.options.id == "settings") {
       let button = $(`<button class='bug-report'><i class="fas fa-bug"></i> ${game.i18n.localize('BUG.bugButton.label')}</button>`);
-
+      // Attach a listener to spawn our Form
       button.click(async (ev) => {
         const { selectedModule } = await getModuleSelection();
         new BugReportForm(undefined, { selectedModule } ).render(true);
       });
-
+      // Adds our button at the top of the sidebar, underneath
+      // game version
       button.insertAfter(html.find("#game-details"));
     }
   });
