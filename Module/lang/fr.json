@@ -1,0 +1,54 @@
+{
+  "BUG": {
+    "form": {
+      "bugTitle": {
+        "label": "Titre"
+      },
+      "issuer": {
+        "label": "Votre nom (non requis)",
+        "placeholder": "Discord, courriel, n'importe quelle façon vous voulez ètre contacté."
+      },
+      "issueLabel": {
+        "label": "Libellé",
+        "options": {
+          "bug": "Bogue",
+          "enhancement": "Amélioration",
+          "translation": "Traduction",
+          "incompatibility": "Imcompatibilité de progiciel "
+        }
+      },
+      "bugDescription": {
+        "label": "Description",
+        "placeholder": "Quesqu'il est arrivé? Comment le reproduire? etc."
+      },
+      "errors": {
+        "incomplete": "Veuillez remplir les valeurs requisent."
+      }
+    },
+    "bugButton": {
+      "label": "Rapporter le bogue"
+    },
+    "versionCheck": {
+      "upToDate": "À jour",
+      "updateRequired": "Mise à jour requise",
+      "label": "Verification de la version",
+      "conflict": "Version conflictuelle",
+      "safeVer": "Version compatible",
+      "unknown": "Module Conflictuel"
+    },
+    "moduleSelect": {
+      "title": "Quel Module?",
+      "helper": "Choisissez un module pour continuer. Si le module n'est pas dans la liste, il n'a probablement pas la propriété 'bug' dans module.json"
+    },
+    "foundIssues": {
+      "title": "Problèmes potentiellement similaires",
+      "none": "Aucun trouvé."
+    },
+    "unsupported": "L'auteur n'a pas activé la fonction de soumission de bogue.",
+    "submitHere": "Veuillez soumettre vos bogues ici:",
+    "submitted": "Problème crée, vous pouvez y accèder ici:",
+    "error": "Une erreur s'est produite lors de la creation du Problème, voir la console pour plus de détails.",
+    "proceed": "Continuer",
+    "submit": "Soumettre"
+  }
+}
