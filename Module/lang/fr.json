@@ -23,6 +23,9 @@
       },
       "errors": {
         "incomplete": "Veuillez remplir les valeurs requisent."
+      },
+      "options": {
+        "activemod": "Envoyer les modules présentement actifs."
       }
     },
     "bugButton": {
