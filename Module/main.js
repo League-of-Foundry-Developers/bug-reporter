@@ -234,7 +234,7 @@ class BugReportForm extends FormApplication {
   async _updateObject(ev, formData) {
     // obtain original data
     const mod = this.module;
-    const {formFields: { bugTitle, bugDescription, issuer, label }} = expandObject(formData);
+    const {formFields: { bugTitle, bugDescription, issuer, label, sendActiveModules }} = expandObject(formData);
 
     // if any of our warnings are not checked, throw
     if (!bugTitle || !bugDescription) {
@@ -296,14 +296,8 @@ class BugReportForm extends FormApplication {
       bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription)}`;
     }
 
-    const data = {
-      bugs: bugsUrl,
-      title: bugTitle,
-      description: fullDescription
-    }
-
     // generating active module list from game.modules
-    const moduleList = generateActiveModuleList();
+    const moduleList = sendActiveModules ? generateActiveModuleList() : "";
 
     // let the app know we're ready to send stuff
     this.isSending = true;
@@ -316,9 +310,9 @@ class BugReportForm extends FormApplication {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        title: data.title,
-        body: data.description,
-        repo: data.bugs,
+        title: bugTitle,
+        body: fullDescription,
+        repo: bugsUrl,
         moduleList,
         moduleSettings: modSettingsMd
       }),

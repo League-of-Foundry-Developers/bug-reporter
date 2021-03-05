@@ -23,6 +23,9 @@
       },
       "errors": {
         "incomplete": "Please finish filling out required values."
+      },
+      "options": {
+        "activemod": "Send active modules"
       }
     },
     "bugButton": {
