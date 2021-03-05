@@ -34,7 +34,7 @@
       "versionCheck": {
         "upToDate": "Naprakész",
         "updateRequired": "Frissítés szükséges",
-        "label": "Verzió ellenőrzés",
+        "label": "Verzió ellenőrzése",
         "conflict": "Verzióütközés",
         "safeVer": "Biztonságos verzió",
         "unknown": "Modulütközés"
