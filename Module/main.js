@@ -14,12 +14,45 @@ Handlebars.registerHelper('bugs-isEmpty', (input) => {
   return isObjectEmpty(input);
 });
 
+/**
+ * Generate a list of active modules to append as an
+ * additional description to bug reports.
+ * @param  {String} separator     Separator between module name and version
+ * @param  {String} versionMarker version prefix
+ * @return {String}               Markdown formatted collapsible list of active modules
+ */
 const generateActiveModuleList = (separator = "--", versionMarker = "v") => {
     let schema = `<details>\n<summary>Active Modules</summary>\n{REPL_MODULES}\n</details>`;
     let data = [];
     let activeModules = [...game.modules].filter(([name, opts]) => opts.active);
     activeModules.forEach(([name, opts]) => data = [...data, `${name}${separator}${versionMarker}${opts.data.version};`]);
     return schema.replace(/{REPL_MODULES}/gi, data.join("\n"));
+}
+
+/**
+ * For a given module determine all settings that are bound
+ * to its scope, collect them, and format them. This only
+ * keeps scalars to prevent mile long descriptions.
+ * 
+ * @param  {module} mod Module data as retrived from game.modules.get()
+ * @return {String}     Markdown formatted collapsible list of settings.
+ */
+const generateModuleSettings = (mod) => {
+  // Find all keys in settings that belong to our module
+  let modSettings = [];
+  game.settings.settings.forEach((setting) => {
+    if (setting.module === mod.data.name) {
+      // only allow scalars
+      if (setting.config && setting.type !== "object") {
+        let setVal = game.settings.get(mod.data.name, setting.key);
+        modSettings.push(`${setting.key}: ${setVal}`);
+      }
+    }
+  })
+  // collapsible field for module settings
+  const schema = `<details>\n<summary>Module Settings</summary>\n\n\`\`\`js\n${modSettings.join(",\n")}\n\`\`\`\n</details>\n`;
+
+  return schema;
 }
 
 
@@ -255,31 +288,6 @@ class BugReportForm extends FormApplication {
       `**Module Version:** ${mod.data.name} v${mod.data.version}`
     ];
 
-    // Find all keys in settings that belong to our module
-    // only add scalars
-    let modSettings = [];
-    game.settings.settings.forEach((setting) => {
-      if (setting.module === mod.data.name) {
-        if (setting.config && setting.type !== "object") {
-          modSettings.push(setting.key);
-        }
-      }
-    });
-    // retrieve the setting and apply some formatting
-    modSettings = modSettings.map((key) => {
-      let setting = game.settings.get(mod.data.name, key);
-      return `${key}: ${setting}`;
-    });
-
-    // collapsible field for module settings
-    const modSettingsMd = 
-      "<details>\n" +
-        "<summary>Module Settings</summary>\n\n" +
-          "\`\`\`js\n" +  
-          `${modSettings.join(",\n")}\n` +
-          "\`\`\`\n" +
-      "</details>\n";
-
     // If any dependencies are present, add their details
     this.dependencies.forEach((depend) => {
       if (depend.active) {
@@ -298,7 +306,9 @@ class BugReportForm extends FormApplication {
 
     // generating active module list from game.modules
     const moduleList = sendActiveModules ? generateActiveModuleList() : "";
-
+    // generate module settings
+    const moduleSettings = generateModuleSettings(mod);
+    
     // let the app know we're ready to send stuff
     this.isSending = true;
     this.render();
