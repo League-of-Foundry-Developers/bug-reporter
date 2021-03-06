@@ -1,0 +1,58 @@
+{
+    "BUG": {
+      "form": {
+        "bugTitle": {
+          "label": "Cím"
+        },
+        "issuer": {
+          "label": "A neved (opcionális)",
+          "placeholder": "Discord, email, bármi amin keresztül elérhetünk."
+        },
+        "issueLabel": {
+          "label": "Címke",
+          "options": {
+            "bug": "Hiba",
+            "enhancement": "Fejlesztés",
+            "translation": "Fordítás",
+            "incompatibility": "Csomag inkompatibilitás"
+          }
+        },
+        "bugDescription": {
+          "label": "Leírás",
+          "placeholder": "Mi történt, hogyan lehet reprodukálni, stb..."
+        },
+        "errors": {
+          "incomplete": "Kérlek a kötelező mezőket töltsd ki."
+        },
+        "options": {
+          "activemod": "Aktív modulok elküldése"
+        }
+      },
+      "bugButton": {
+        "label": "Hiba bejelentése"
+      },
+      "versionCheck": {
+        "upToDate": "Naprakész",
+        "updateRequired": "Frissítés szükséges",
+        "label": "Verzió ellenőrzése",
+        "conflict": "Verzióütközés",
+        "safeVer": "Biztonságos verzió",
+        "unknown": "Modulütközés"
+      },
+      "moduleSelect": {
+        "title": "Melyik modul?",
+        "helper": "Válassz egy modult a folytatáshoz. Ha a te modulod nincs a listán, valószínűleg a manisfest fájl nem tartalmazza a 'bugs' mezőt." 
+      },
+      "foundIssues": {
+        "title": "Potenciálisan hasonló problémák",
+        "none": "Nincs találat."
+      },
+      "unsupported": "A modul szerzője nem engedélyezte a hibajelentés küldése funkciót.", 
+      "submitHere": "Kérlek jelentsd a hibát itt:",
+      "submitted": "Hibajelentés létrehozva, itt tekintheted meg:",
+      "error": "Probléma adódott a hibajelentés létrehozásával, bővebb információért nézd meg a console-t.",
+      "proceed": "Folytatás",
+      "submit": "Elküldés"
+    }
+  }
+  
