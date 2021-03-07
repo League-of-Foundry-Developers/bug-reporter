@@ -301,15 +301,16 @@ class BugReportForm extends FormApplication {
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
 
     let bugsUrl = this.endpoints.bugs;
-    // construct gitlab link (if applicable)
-    if (this.gitlab) {
-      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription)}`;
-    }
 
     // generating active module list from game.modules
     const moduleList = sendActiveModules ? generateActiveModuleList() : "";
     // generate module settings
     const moduleSettings = generateModuleSettings(mod);
+
+    // construct gitlab link (if applicable)
+    if (this.gitlab) {
+      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription + "\n" + moduleList + moduleSettings)}`;
+    }
     
     // let the app know we're ready to send stuff
     this.isSending = true;
