@@ -46,7 +46,7 @@ namespace FoundryVttBugReporterApi
                 return await CreateGitlabBug(report);
             }
 
-            var githubUrlRegex = new Regex(@"github\.com\/([A-z|\-|1-9]*)\/([A-z|\-|1-9]*)");
+            var githubUrlRegex = new Regex(@"github\.com\/(repos\/)?([A-z|\-|1-9]*)\/([A-z|\-|1-9]*)");
             if (!githubUrlRegex.IsMatch(report.RepositoryUrl))
             {
                 return new ObjectResult(report.RepositoryUrl + " does not seem to be a correct Github URL")
@@ -76,9 +76,19 @@ namespace FoundryVttBugReporterApi
             }
             issue.Body += "\n" + report.Body;
 
+            if (report.ModuleSettingsHtml != null && report.ModuleSettingsHtml.StartsWith("<details>") && report.ModuleSettingsHtml.EndsWith("</details>\n"))
+            {
+                issue.Body += report.ModuleSettingsHtml;
+            }
+
+            if (report.ModuleListHtml != null && report.ModuleListHtml.StartsWith("<details>") && report.ModuleListHtml.EndsWith("</details>"))
+            {
+                issue.Body += report.ModuleListHtml;
+            }
+
             var match = githubUrlRegex.Match(report.RepositoryUrl);
-            var owner = match.Groups.Values.ElementAt(1).Value;
-            var repo = match.Groups.Values.ElementAt(2).Value;
+            var owner = match.Groups.Values.ElementAt(2).Value;
+            var repo = match.Groups.Values.ElementAt(3).Value;
 
             try
             {

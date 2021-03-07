@@ -15,5 +15,11 @@ namespace FoundryVttBugReporterApi
 
         [JsonProperty("versionInformation")]
         public VersionInformation VersionInformation { get; set; }
+
+        [JsonProperty("moduleList")]
+        public string ModuleListHtml { get; set; }
+
+        [JsonProperty("moduleSettings")]
+        public string ModuleSettingsHtml { get; set; }
     }
 }

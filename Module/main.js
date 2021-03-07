@@ -289,11 +289,13 @@ class BugReportForm extends FormApplication {
     ];
 
     // If any dependencies are present, add their details
-    this.dependencies.forEach((depend) => {
-      if (depend.active) {
-        versions.push(`**Dependency Version:** ${depend.name} v${depend.version}`);
-      }
-    });
+    if (this.dependencies) {
+      this.dependencies.forEach((depend) => {
+        if (depend.active) {
+          versions.push(`**Dependency Version:** ${depend.name} v${depend.version}`);
+        }
+      });
+    }
 
     // make user inputted data one string
     const fullDescription = [[issuerString, labelString].join('\n'), versions.join('\n'), descriptionString].join('\n \n');
@@ -324,7 +326,7 @@ class BugReportForm extends FormApplication {
         body: fullDescription,
         repo: bugsUrl,
         moduleList,
-        moduleSettings: modSettingsMd
+        moduleSettings: moduleSettings
       }),
     })
     // wait for the response
