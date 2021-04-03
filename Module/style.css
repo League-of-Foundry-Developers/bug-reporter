@@ -55,7 +55,7 @@
   display: none;
 }
 
-.bug-report .input-row > :not(:first-child) {
+.bug-report form > .flexrow > :not(:first-child) {
   margin-left: 1em;
 }
 
@@ -84,6 +84,22 @@
   border-radius: 3px;
   padding: 0.5em;
   flex: 1 0 33%;
+}
+
+.bug-report .module-compat-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.bug-report .module-compat-list > :not(:first-child) {
+  margin-top: 0.5em;
+}
+
+.bug-report .module-compat-list li {
+  padding: 0.5em;
+  background:rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  box-shadow: 0 0 0.2em inset rgba(0, 0, 0, 0.3);
 }
 
 .bug-report form > :not(:first-child) {
