@@ -44,7 +44,7 @@ const generateModuleSettings = (mod) => {
     if (setting.module === mod.data.name) {
       // only allow scalars
       if (setting.config && setting.type !== "object") {
-        const ignore = ["cookie", "password", "secret", "token"].some(badKey => setting.key.includes(badKey));
+        const ignore = ["cookie", "password", "secret", "token", "bearer"].some(badKey => setting.key.includes(badKey));
         if (!ignore){
           let setVal = game.settings.get(mod.data.name, setting.key);
           modSettings.push(`${setting.key}: ${setVal}`);
