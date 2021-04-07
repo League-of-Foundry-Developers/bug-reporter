@@ -25,7 +25,7 @@
         "incomplete": "Please finish filling out required values."
       },
       "options": {
-        "activemod": "Send active modules"
+        "activemod": "Send list of active modules with report"
       }
     },
     "bugButton": {
