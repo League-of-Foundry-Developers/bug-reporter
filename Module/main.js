@@ -44,8 +44,11 @@ const generateModuleSettings = (mod) => {
     if (setting.module === mod.data.name) {
       // only allow scalars
       if (setting.config && setting.type !== "object") {
-        let setVal = game.settings.get(mod.data.name, setting.key);
-        modSettings.push(`${setting.key}: ${setVal}`);
+        const ignore = ["cookie", "password", "secret", "token"].some(badKey => setting.key.includes(badKey));
+        if (!ignore){
+          let setVal = game.settings.get(mod.data.name, setting.key);
+          modSettings.push(`${setting.key}: ${setVal}`);
+        }
       }
     }
   })
@@ -305,13 +308,14 @@ class BugReportForm extends FormApplication {
     // generating active module list from game.modules
     const moduleList = sendActiveModules ? generateActiveModuleList() : "";
     // generate module settings
-    const moduleSettings = sendModuleSettings ? generateModuleSettings(mod) : "";
+    const moduleSettings = sendModSettings ? generateModuleSettings(mod) : "";
+    console.log(moduleSettings);
 
     // construct gitlab link (if applicable)
     if (this.gitlab) {
       bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription + "\n" + moduleList + moduleSettings)}`;
     }
-    
+    return;
     // let the app know we're ready to send stuff
     this.isSending = true;
     this.render();
