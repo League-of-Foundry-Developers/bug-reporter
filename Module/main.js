@@ -309,13 +309,12 @@ class BugReportForm extends FormApplication {
     const moduleList = sendActiveModules ? generateActiveModuleList() : "";
     // generate module settings
     const moduleSettings = sendModSettings ? generateModuleSettings(mod) : "";
-    console.log(moduleSettings);
 
     // construct gitlab link (if applicable)
     if (this.gitlab) {
       bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription + "\n" + moduleList + moduleSettings)}`;
     }
-    return;
+
     // let the app know we're ready to send stuff
     this.isSending = true;
     this.render();
