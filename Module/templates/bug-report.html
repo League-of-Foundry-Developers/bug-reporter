@@ -71,7 +71,6 @@
       <input type="text" class="bug-title" name="formFields.bugTitle" data-dtype="String"
         value="{{formFields.bugTitle}}" />
     </div>
-
     <div class="flexcol found-issues {{#if (bugs-isEmpty foundIssues)}}hidden{{/if}}" tabindex="-1">
       <h3>{{localize 'BUG.foundIssues.title'}}</h3>
       <div class="found-issue-list" id="bug-reporter-issues-found">
@@ -112,6 +111,9 @@
     <div class="form-group">
       <label for="sendActiveModules">{{localize 'BUG.form.options.activemod'}}</label>
       <input type="checkbox" id="sendActiveModules" name="formFields.sendActiveModules" checked />
+
+      <label for="sendModSettings">{{localize 'BUG.form.options.sendModSettings'}}</label>
+      <input type="checkbox" id="sendModSettings" name="formFields.sendModSettings"/>
     </div>
 
     <div class="form-group-stacked">

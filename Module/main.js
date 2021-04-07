@@ -267,7 +267,7 @@ class BugReportForm extends FormApplication {
   async _updateObject(ev, formData) {
     // obtain original data
     const mod = this.module;
-    const {formFields: { bugTitle, bugDescription, issuer, label, sendActiveModules }} = expandObject(formData);
+    const {formFields: { bugTitle, bugDescription, issuer, label, sendActiveModules, sendModSettings }} = expandObject(formData);
 
     // if any of our warnings are not checked, throw
     if (!bugTitle || !bugDescription) {
@@ -305,7 +305,7 @@ class BugReportForm extends FormApplication {
     // generating active module list from game.modules
     const moduleList = sendActiveModules ? generateActiveModuleList() : "";
     // generate module settings
-    const moduleSettings = generateModuleSettings(mod);
+    const moduleSettings = sendModuleSettings ? generateModuleSettings(mod) : "";
 
     // construct gitlab link (if applicable)
     if (this.gitlab) {
