@@ -556,7 +556,7 @@ Hooks.once("init", () => {
   game.settings.register("bug-reporter", "contactInfo", {
     scope: "client",
     config: false,
-    default: "abc",
+    default: "",
     type: String,
   });
 });
