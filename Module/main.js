@@ -232,6 +232,7 @@ class BugReportForm extends FormApplication {
     let data = {
       ...super.getData(), 
       conflicts: this.conflicts,
+      contactInfo: game.settings.get("bug-reporter", "contactInfo"),
       dependencies: this.dependencies,
       formFields: this.formFields,
       foundIssues: this.foundIssues,
@@ -280,6 +281,12 @@ class BugReportForm extends FormApplication {
 
       throw errorMessage;
     }
+
+    // update default contactInfo if different from stored default
+    if (issuer !== game.settings.get("bug-reporter", "contactInfo")) {
+      await game.settings.set("bug-reporter", "contactInfo", issuer);
+    }
+
     // assemble header strings
     const descriptionString = `**Description**:\n${bugDescription}`;
     const issuerString = issuer ? `**Submitted By**: ${issuer}` : '';
@@ -544,5 +551,12 @@ Hooks.once("init", () => {
       // game version
       button.insertAfter(html.find("#game-details"));
     }
+  });
+
+  game.settings.register("bug-reporter", "contactInfo", {
+    scope: "client",
+    config: false,
+    default: "",
+    type: String,
   });
 });
