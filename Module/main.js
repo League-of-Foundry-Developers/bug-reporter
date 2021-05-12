@@ -199,14 +199,19 @@ class BugReportForm extends FormApplication {
    */
   get dependencies() {
     return this.module.data.dependencies?.map((dependency) => {
-      let plugin = game.modules.get(dependency.name);
-      if (plugin === undefined){
-        if (dependency.name === game.system.data.name) {
+      let plugin;
+
+      switch (dependency.type) {
+        case "module":
+          plugin = game.modules.get(dependency.name);
+          break;
+        case "system":
           plugin = game.system;
-        } else if (dependency.name === game.world.data.name) {
+          break;
+        case "world":
           plugin = game.world;
-        }
       }
+
       let upToDate;
       // get remote manifest
       let remote = this.checkVer(plugin);
