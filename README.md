@@ -17,17 +17,28 @@ This module allows users to search for and sometimes create github/gitlab issues
 
 ### How do I opt in?
 1. Have a url to a github or gitlab repository issues page in the `bugs` field of your manifest.
-2. Add `allowBugReporter: true` to your manifest json.
+2. Add `allowBugReporter: true` to your manifest json. In versions BEFORE 0.8.3 (broken in 0.8.2) of Foundry you can put `allowBugReporter` at the root of the manifest, but starting with 0.8.3 it needs to be inside of the `flags` field of the manifest.
 
-#### Example:
+#### Examples:
+
+Github
 ```md
   "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
   "allowBugReporter": true
 ```
 
+Gitlab
 ```md
   "bugs": "https://gitlab.com/Ethck/testing/-/issues",
   "allowBugReporter": true
+```
+
+0.8.3+
+```md
+  "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
+  "flags": {
+    "allowBugReporter": true
+  }
 ```
 
 #### Rationale:
