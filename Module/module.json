@@ -2,9 +2,9 @@
     "name": "bug-reporter",
     "title": "🐛 Bug Reporter",
     "description": "Adds a utility in game to report bugs without having to leave Foundry.",
-    "version": "1.0.0",
+    "version": "1.3.0",
     "minimumCoreVersion": "0.7.5",
-    "compatibleCoreVersion": "0.7.9",
+    "compatibleCoreVersion": "0.8.3",
     "author": "Ethck",
     "authors": [
         {
@@ -61,5 +61,8 @@
     "download": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/module.zip",
     "readme": "https://github.com/League-of-Foundry-Developers/bug-reporter/blob/master/README.md",
     "bugs": "https://github.com/League-of-Foundry-Developers/bug-reporter/issues",
-    "allowBugReporter": true
+    "allowBugReporter": true,
+    "flags": {
+      "allowBugReporter": true
+    }
 }
