@@ -74,6 +74,10 @@ class BugReportForm extends FormApplication {
 
     this.useBugReporter = (this.module.data.flags?.allowBugReporter || this.module.data.allowBugReporter) && (this.github || this.gitlab);
 
+    if (this.module.data.allowBugReporter) {
+      console.warn(`Root level allowBugReporter fields are deprecated as of BugReporter 1.3.0 and will be removed in a future release. The module ${this.module.data.name} should update its manifest to place allowBugReporter in the flags object.`);
+    }
+
     this.formFields = {
       bugTitle: '',
       issuer: '',
