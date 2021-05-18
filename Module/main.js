@@ -199,12 +199,24 @@ class BugReportForm extends FormApplication {
    */
   get dependencies() {
     return this.module.data.dependencies?.map((dependency) => {
-      const mod = game.modules.get(dependency.name);
+      let plugin;
+
+      switch (dependency.type) {
+        case "module":
+          plugin = game.modules.get(dependency.name);
+          break;
+        case "system":
+          plugin = game.system;
+          break;
+        case "world":
+          plugin = game.world;
+      }
+
       let upToDate;
       // get remote manifest
-      let remote = this.checkVer(mod);
+      let remote = this.checkVer(plugin);
       // determine status
-      if (!isNewerVersion(remote.manifest?.version, mod.data.version)) {
+      if (!isNewerVersion(remote.manifest?.version, plugin.data.version)) {
         // we are up to date
         upToDate = true;
       } else {
@@ -213,9 +225,11 @@ class BugReportForm extends FormApplication {
       }
       // assemble return
       return {
-        name: mod.data.title,
-        active: mod.active,
-        version: mod.data.version,
+        name: plugin.data.title,
+        // If plugin is a module, then check if it's active
+        // otherwise it's a system/world that is always active.
+        active: plugin.type === "module" ? plugin.active : true,
+        version: plugin.data.version,
         upToDate
       }
     })
