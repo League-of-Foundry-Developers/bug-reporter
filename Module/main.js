@@ -72,7 +72,11 @@ class BugReportForm extends FormApplication {
     this.github = this.module.data.bugs.includes("github");
     this.gitlab = this.module.data.bugs.includes("gitlab");
 
-    this.useBugReporter = this.module.data.allowBugReporter && (this.github || this.gitlab);
+    this.useBugReporter = (this.module.data.flags?.allowBugReporter || this.module.data.allowBugReporter) && (this.github || this.gitlab);
+
+    if (this.module.data.allowBugReporter) {
+      console.warn(`Root level allowBugReporter fields are deprecated as of BugReporter 1.3.0 and will be removed in a future release. The module ${this.module.data.name} should update its manifest to place allowBugReporter in the flags object.`);
+    }
 
     this.formFields = {
       bugTitle: '',
@@ -158,6 +162,8 @@ class BugReportForm extends FormApplication {
    * For each conflict determine if the conflict is based
    * on a certain version, or if the conflict is with the
    * module in general.
+   * 
+   * TODO: Fix this for 0.8.3+ where the M+ spec is getting a rework
    *
    * SPEC: https://foundryvtt.wiki/en/development/manifest-plus#conflicts
    * 
@@ -254,8 +260,8 @@ class BugReportForm extends FormApplication {
       module: this.module,
       submittedIssue: this.submittedIssue,
       useBugReporter: this.useBugReporter,
-      // if core version > 0.7.10 (like 0.8.X)
-      unsupportedCore: isNewerVersion(game.data.version, "0.7.10"),
+      // if core version > 0.8.10 (like 0.9.X)
+      unsupportedCore: isNewerVersion(game.data.version, "0.8.10"),
     };
 
     return data;
