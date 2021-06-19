@@ -59,13 +59,25 @@ const generateModuleSettings = (mod) => {
   return schema;
 }
 
+/**
+ * Format given API Details (usually pre-filled via the BugReporterAPI) in a way that is similar to what
+ * is already used in our bug report structure.
+ * 
+ * @param {String} apiDetails Details such as errors and/or stack traces to append to the bug report.
+ * @returns 
+ */
+const generateAdditionalDetails = (apiDetails) => {
+  let schema = `<details>\n<summary>Additional Details</summary>\n{REPL_DETAILS}\n</details>`
+  return schema.replace(/{REPL_DETAILS}/gi, apiDetails);
+}
+
 
 /**
  * Based off of Moo Man's Excellent WFRP4e Bug Reporter
  * https://github.com/moo-man/WFRP4e-FoundryVTT/blob/master/modules/apps/bug-report.js
  */
 class BugReportForm extends FormApplication {
-  constructor(app, { selectedModule }) {
+  constructor(app, { selectedModule, title = "", description = "" }) {
     super(app);
     this.endpoint = "https://foundryvttbugreporter.azurewebsites.net/api/ReportBugFunction?code=VCvrWib1lha2nf9Pza7fOaThNTksbmHdEjVhIudCHwXg3zyg4vPprg==";
     this.module = game.modules.get(selectedModule) || game.system;
@@ -79,10 +91,11 @@ class BugReportForm extends FormApplication {
     }
 
     this.formFields = {
-      bugTitle: '',
+      bugTitle: title || '',
       issuer: '',
       issueLabel: '',
       bugDescription: '',
+      apiDetails: description || '',
     }
 
     this.foundIssues = [];
@@ -292,7 +305,7 @@ class BugReportForm extends FormApplication {
   async _updateObject(ev, formData) {
     // obtain original data
     const mod = this.module;
-    const {formFields: { bugTitle, bugDescription, issuer, label, sendActiveModules, sendModSettings }} = expandObject(formData);
+    const {formFields: { apiDetails, bugTitle, bugDescription, issuer, label, sendActiveModules, sendModSettings }} = expandObject(formData);
 
     // if any of our warnings are not checked, throw
     if (!bugTitle || !bugDescription) {
@@ -337,10 +350,15 @@ class BugReportForm extends FormApplication {
     const moduleList = sendActiveModules ? generateActiveModuleList() : "";
     // generate module settings
     const moduleSettings = sendModSettings ? generateModuleSettings(mod) : "";
+    // format errors / stack traces provided by API
+    const additionalDetails = (apiDetails != false) ? generateAdditionalDetails(apiDetails): "";
+
+    console.log(additionalDetails);
+    return;
 
     // construct gitlab link (if applicable)
     if (this.gitlab) {
-      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription + "\n" + moduleList + moduleSettings)}`;
+      bugsUrl = bugsUrl + `?title=${encodeURIComponent(bugTitle)}&description=${encodeURIComponent(fullDescription + "\n" + moduleList + moduleSettings + additionalDetails)}`;
     }
 
     // let the app know we're ready to send stuff
@@ -358,7 +376,8 @@ class BugReportForm extends FormApplication {
         body: fullDescription,
         repo: bugsUrl,
         moduleList,
-        moduleSettings: moduleSettings
+        moduleSettings: moduleSettings,
+        additionalDetails
       }),
     })
     // wait for the response
@@ -556,6 +575,40 @@ function getModuleSelection() {
   });
 }
 
+/**
+ * API class that allows other modules to interact with Bug Reporter
+ */
+class BugReporterAPI {
+  /**
+   * This function allows you to check if a given module (modid) is supported
+   * by the Bug Reporter Module. 
+   * 
+   * NOTE: This evaluation currently does NOT check if the given `bugs` url from 
+   * the module's manifest is legitimate, so in theory there can be a false positive.
+   * 
+   * @param {'String'} modid ID of the module in question
+   * @returns True if Bug Reporter is functional with the provided module ID
+   */
+  allowBugReporter(modid) {
+    const module = game.modules.get(modid) || game.system;
+    return (module.data.flags?.allowBugReporter || module.data.allowBugReporter);
+  }
+
+  /**
+   * Begin the workflow for a given module/system (modid) and potentially provide some
+   * pre-filled details to the form like the Title of the bug report and some details. Note
+   * that the details must be a String and will undergo some slight modifications (as well as
+   * some content moderation from the FoundryVttBugReporterApi hosted on Azure)
+   * 
+   * @param {String} modid ID of the module to start the workflow for
+   * @param {String} title What you want to be pre-populated into the `title` field.
+   * @param {String} details What you want to be included in the "body" of the bug report.
+   */
+  bugWorkflow(modid, title = "", details = "") {
+    new BugReportForm(undefined, { selectedModule: modid, title, description: details} ).render(true);
+  }
+}
+
 // Once Foundry has initialized, add our Hook to listen for sidebar render
 Hooks.once("init", () => {
   Hooks.on("renderSidebarTab", async (app, html) => {
@@ -571,6 +624,8 @@ Hooks.once("init", () => {
       // game version
       button.insertAfter(html.find("#game-details"));
     }
+  // game.modules isn't populated until init, so we insert our API here.
+  game.modules.get("bug-reporter").api = new BugReporterAPI;
   });
 
   game.settings.register("bug-reporter", "contactInfo", {

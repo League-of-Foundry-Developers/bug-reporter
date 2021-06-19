@@ -122,8 +122,15 @@
     <div class="form-group-stacked">
       <label class="wide">{{localize 'BUG.form.bugDescription.label'}}*</label>
       <textarea placeholder="{{localize 'BUG.form.bugDescription.placeholder'}}" class="bug-description" maxlength="875"
-        name="formFields.bugDescription" value="{{formFields.bugDescription}}" rows=10 data-type="String"></textarea>
+        name="formFields.bugDescription" rows=10 data-type="String">{{formFields.bugDescription}}</textarea>
     </div>
+    {{#if formFields.apiDetails}}
+      <div class="form-group-stacked">
+        <label class="wide">{{localize 'BUG.form.apiDetails.label'}}*</label>
+        <textarea placeholder="{{localize 'BUG.form.apiDetails.placeholder'}}" class="bug-description" maxlength="875"
+          name="formFields.apiDetails" rows=10 data-type="String">{{formFields.apiDetails}}</textarea>
+      </div>
+    {{/if}}
 
     <button type="submit" {{#if isSending}}disabled{{/if}} class="bug-submit">{{localize "BUG.submit"}}</button>
   {{else}}
