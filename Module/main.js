@@ -22,7 +22,7 @@ Handlebars.registerHelper('bugs-isEmpty', (input) => {
  * @return {String}               Markdown formatted collapsible list of active modules
  */
 const generateActiveModuleList = (separator = "--", versionMarker = "v") => {
-    let schema = `<details>\n<summary>Active Modules</summary>\n{REPL_MODULES}\n</details>`;
+    let schema = `<details>\n<summary>Active Modules</summary>\n\n{REPL_MODULES}\n</details>`;
     let data = [];
     let activeModules = [...game.modules].filter(([name, opts]) => opts.active);
     activeModules.forEach(([name, opts]) => data = [...data, `${name}${separator}${versionMarker}${opts.data.version};`]);
