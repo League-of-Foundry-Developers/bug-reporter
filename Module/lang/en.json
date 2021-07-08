@@ -21,6 +21,10 @@
         "label": "Description",
         "placeholder": "What happened, how to reproduce, etc."
       },
+      "apiDetails": {
+        "label": "Stack Traces / Errors",
+        "placeholder": "This field can be used for stack traces, error messages, etc."
+      },
       "errors": {
         "incomplete": "Please finish filling out required values."
       },

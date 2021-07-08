@@ -21,6 +21,16 @@ This module allows users to search for and sometimes create github/gitlab issues
 
 #### Examples:
 
+0.8.3+
+```md
+  "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
+  "flags": {
+    "allowBugReporter": true
+  }
+```
+
+The following examples are remnants from the 0.7.X releases for how to make bug-reporter work, but they are kept to show the proper Github/lab links.
+
 Github
 ```md
   "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
@@ -33,12 +43,31 @@ Gitlab
   "allowBugReporter": true
 ```
 
-0.8.3+
-```md
-  "bugs": "https://github.com/Ethck/legendary-training-wheels/issues",
-  "flags": {
-    "allowBugReporter": true
-  }
+### Bug Reporter API
+
+As of Bug Reporter version 1.3.1 there is now an API that a developer can launch and pre-fill with data for bug reports.
+
+The API can be accessed as follows:
+
+```js
+game.modules.get("bug-reporter").api;
+```
+
+In the API you will find the following methods available for your use:
+
+- allowBugReporter(modid)
+- bugWorkflow(modid, title = "", details = "")
+
+#### allowBugReporter()
+
+allowBugReporter takes a string of the module name and returns whether or not the module in question supports Bug Reporter.
+
+#### bugWorkflow()
+bugWorkflow takes the modid and option title & details to generate a bug report that will be prefilled with the details of the bug that you provide. These details can be formatted however you desire, but it will be wrapped inside of <summary> tags on transmission to Github/lab.
+
+Example:
+```js
+game.modules.get("bug-reporter").api.bugWorkflow("bug-reporter", "Testing the API", "Here are my auto-generated details, perhaps even an error message");
 ```
 
 #### Rationale:
