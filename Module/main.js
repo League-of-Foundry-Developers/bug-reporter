@@ -602,7 +602,11 @@ class BugReporterAPI {
    * @param {String} details What you want to be included in the "body" of the bug report.
    */
   bugWorkflow(modid, title = "", details = "") {
-    new BugReportForm(undefined, { selectedModule: modid, title, description: details} ).render(true);
+    if (this.allowBugReporter(modid)) {
+      new BugReportForm(undefined, { selectedModule: modid, title, description: details} ).render(true);
+    } else {
+      console.error("The module " + modid + " does not support bug-reporter.")
+    }
   }
 }
 
