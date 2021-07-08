@@ -67,7 +67,7 @@ const generateModuleSettings = (mod) => {
  * @returns 
  */
 const generateAdditionalDetails = (apiDetails) => {
-  let schema = `<details>\n<summary>Additional Details</summary>\n{REPL_DETAILS}\n</details>`
+  let schema = `<details>\n<summary>Additional Details</summary>\n\n{REPL_DETAILS}\n</details>`
   return schema.replace(/{REPL_DETAILS}/gi, apiDetails);
 }
 
@@ -352,9 +352,6 @@ class BugReportForm extends FormApplication {
     const moduleSettings = sendModSettings ? generateModuleSettings(mod) : "";
     // format errors / stack traces provided by API
     const additionalDetails = (apiDetails != false) ? generateAdditionalDetails(apiDetails): "";
-
-    console.log(additionalDetails);
-    return;
 
     // construct gitlab link (if applicable)
     if (this.gitlab) {
