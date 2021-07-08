@@ -41,6 +41,33 @@ Gitlab
   }
 ```
 
+### Bug Reporter API
+
+As of Bug Reporter version 1.3.1 there is now an API that a developer can launch and pre-fill with data for bug reports.
+
+The API can be accessed as follows:
+
+```js
+game.modules.get("bug-reporter").api;
+```
+
+In the API you will find the following methods available for your use:
+
+- allowBugReporter(modid)
+- bugWorkflow(modid, title = "", details = "")
+
+#### allowBugReporter()
+
+allowBugReporter takes a string of the module name and returns whether or not the module in question supports Bug Reporter.
+
+#### bugWorkflow()
+bugWorkflow takes the modid and option title & details to generate a bug report that will be prefilled with the details of the bug that you provide. These details can be formatted however you desire, but it will be wrapped inside of <summary> tags on transmission to Github/lab.
+
+Example:
+```js
+game.modules.get("bug-reporter").api.bugWorkflow("bug-reporter", "Testing the API", "Here are my auto-generated details, perhaps even an error message");
+```
+
 #### Rationale:
 > Why are you leveraging an arbitrary, unofficial field on the Manifest instead of providing an API for modules to register themselves?
 
