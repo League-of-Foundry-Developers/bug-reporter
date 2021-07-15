@@ -566,7 +566,7 @@ function getModuleSelection() {
       },
       default: 'yes',
       close: () => {
-        reject();
+        reject("No module chosen to report bugs to.");
       },
     }).render(true);
   });
