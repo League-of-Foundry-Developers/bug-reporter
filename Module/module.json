@@ -57,6 +57,7 @@
     "esmodules": ["/main.js"],
     "styles": ["/style.css"],
     "url": "https://github.com/League-of-Foundry-Developers/bug-reporter",
+    "changelog": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases",
     "manifest": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/manifest.json",
     "download": "https://github.com/League-of-Foundry-Developers/bug-reporter/releases/download/latest/module.zip",
     "readme": "https://github.com/League-of-Foundry-Developers/bug-reporter/blob/master/README.md",
