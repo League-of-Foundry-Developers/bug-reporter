@@ -588,6 +588,12 @@ class BugReporterAPI {
    */
   allowBugReporter(modid) {
     const module = game.modules.get(modid) || game.system;
+
+    if (module.type === "module") {
+      if (module.active === "false"){
+        return false;
+      }
+    }
     return (module.data.flags?.allowBugReporter || module.data.allowBugReporter);
   }
 
