@@ -274,7 +274,6 @@ class BugReportForm extends FormApplication {
      * @return {object} combined object for handlebars template to use
      */
     getData() {
-        const gVersion = game.version;
         let data = {
             ...super.getData(),
             conflicts: this.conflicts,
@@ -282,14 +281,10 @@ class BugReportForm extends FormApplication {
             dependencies: this.dependencies,
             formFields: this.formFields,
             foundIssues: this.foundIssues,
-            gVersion: gVersion,
             isSending: this.isSending,
             module: this.module,
-            outdatedCore: isNewerVersion(this.module.data.minimumCoreVersion, gVersion),
             submittedIssue: this.submittedIssue,
             useBugReporter: this.useBugReporter,
-            // if core version > 0.8.10 (like 0.9.X)
-            unsupportedCore: isNewerVersion(gVersion, this.module.data.compatibleCoreVersion),
         };
 
         return data;
