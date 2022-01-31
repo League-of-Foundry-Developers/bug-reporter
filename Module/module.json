@@ -47,11 +47,11 @@
     "media": [
       {
         "type": "cover",
-        "link": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/cover-image.jpg"
+        "url": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/cover-image.jpg"
       },
       {
         "type": "screenshot",
-        "link": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/form-flow.png"
+        "url": "https://raw.githubusercontent.com/League-of-Foundry-Developers/bug-reporter/master/form-flow.png"
       }
     ],
     "esmodules": ["/main.js"],
