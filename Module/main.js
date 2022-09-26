@@ -208,27 +208,29 @@ class BugReportForm extends FormApplication {
             }
         });
 
-        return foundry.utils.mergeObject(v9Conflicts, (this.module?.relationships?.conflicts ?? []))?.map((conflict) => {
+        return foundry.utils.mergeObject(v9Conflicts, Array.from(this.module?.relationships?.conflicts?? [])).filter(conflict => {
+            const mod = game.modules.get(conflict.id);
+            return (mod ?? false) && (mod?.active ?? false);
+        })?.map((conflict) => {
             const mod = game.modules.get(conflict.id);
             let conflictingVersion = false;
             let versionChecks = false;
 
             // Check if utilizing option versionMin / versionMax fields
             if ((conflict.compatibility.minimum ?? false) && (conflict.compatibility.maximum ?? false)) {
-                versionChecks = true;
+                 versionChecks = true;
                 // find if current module version is within the versionMin and versionMax fields
                 if (
-                    isNewerVersion(mod.version ?? mod.data.version, conflict.compatibility.minimum) &&
-                    !isNewerVersion(mod.version ?? mod.data.version, conflict.compatibility.maximum)
-                ) {
+                    isNewerVersion(mod.version ?? (mod?.data?.version ?? '0.0.0'), conflict.compatibility.minimum) &&
+                    !isNewerVersion(mod.version ?? (mod?.data?.version ?? '0.0.0'), conflict.compatibility.maximum)
+                 ) {
                     conflictingVersion = true;
-                }
+                 }
             }
-
             return {
-                name: mod?.title ?? mod.data.title,
+                name: mod?.title ?? (mod?.data?.title ?? ''),
                 active: mod.active,
-                version: mod.version ?? mod.data.version,
+                version: mod.version ?? (mod?.data?.version ?? ''),
                 conflictingVersion,
                 versionChecks,
             };
