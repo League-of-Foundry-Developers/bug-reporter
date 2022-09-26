@@ -23,9 +23,9 @@ Handlebars.registerHelper("bugs-isEmpty", (input) => {
 const generateActiveModuleList = (separator = "--", versionMarker = "v") => {
     let schema = `<details>\n<summary>Active Modules</summary>\n\n{REPL_MODULES}\n</details>`;
     let data = [];
-    let activeModules = [...game.modules].filter(([name, opts]) => opts.active);
+    let activeModules = [...game.modules].filter((module) => (module?.active ?? module?.[1]?.active) ?? false);
     activeModules.forEach(
-        ([name, opts]) => (data = [...data, `${name}${separator}${versionMarker}${opts.data.version};`])
+        (module) => (data = [...data, `${module?.id ?? module?.[1]?.name}${separator}${versionMarker}${module?.version ?? module?.[1]?.version};`])
     );
     return schema.replace(/{REPL_MODULES}/gi, data.join("\n"));
 };
@@ -186,34 +186,49 @@ class BugReportForm extends FormApplication {
      * module in general.
      *
      * TODO: Fix this for 0.8.3+ where the M+ spec is getting a rework
+     * ? HUH? Is this even used anywhere?
      *
      * SPEC: https://foundryvtt.wiki/en/development/manifest-plus#conflicts
      *
      * @return {object} conflicts, version, update status
      */
     get conflicts() {
-        return this.module.data.conflicts?.map((conflict) => {
-            const mod = game.modules.get(conflict.name);
+        // Migrate Conflicts to v10 Format
+        let v9Conflicts = foundry.utils.mergeObject((this.module.data.conflicts ?? []), (this.module.flags.conflicts ?? []), {inplace: false})?.map((conflict) => {
+            return {
+                id: conflict?.id ?? conflict?.name,
+                type: conflict.type,
+                manifest: '',
+                reason: conflict?.description ?? '',
+                "compatibility": {
+                    "minimum": conflict?.versionMin ?? '0.0.0',
+                    "maximum": conflict?.versionMax ?? undefined,
+                    "version": undefined
+                }
+            }
+        });
+
+        return foundry.utils.mergeObject(v9Conflicts, (this.module.relationships.conflicts ?? []))?.map((conflict) => {
+            const mod = game.modules.get(conflict.id);
             let conflictingVersion = false;
             let versionChecks = false;
+
             // Check if utilizing option versionMin / versionMax fields
-            if ("versionMin" in conflict && "versionMax" in conflict) {
+            if ((conflict.compatibility.minimum ?? false) && (conflict.compatibility.maximum ?? false)) {
                 versionChecks = true;
                 // find if current module version is within the versionMin and versionMax fields
                 if (
-                    isNewerVersion(mod.data.version, conflict.versionMin) &&
-                    !isNewerVersion(mod.data.version, conflict.versionMax)
+                    isNewerVersion(mod.version ?? mod.data.version, conflict.compatibility.minimum) &&
+                    !isNewerVersion(mod.version ?? mod.data.version, conflict.compatibility.maximum)
                 ) {
                     conflictingVersion = true;
                 }
-            } else {
-                versionChecks = false;
             }
 
             return {
-                name: mod.data.title,
+                name: mod?.title ?? mod.data.title,
                 active: mod.active,
-                version: mod.data.version,
+                version: mod.version ?? mod.data.version,
                 conflictingVersion,
                 versionChecks,
             };
@@ -333,15 +348,15 @@ class BugReportForm extends FormApplication {
         }
 
         // assemble header strings
-        const descriptionString = `**Description**:\n${bugDescription}`;
+        const descriptionString = `### Description\n${bugDescription}\n`;
         const issuerString = issuer ? `**Submitted By**: ${issuer}` : "";
         const labelString = label ? `**Feedback Type**: ${label}` : "";
 
         // find and assemble version details
         const versions = [
-            `**Core:** ${game.data.version}`,
-            `**System:** ${game.system.id} v${game.system.data.version}`,
-            `**Module Version:** ${mod.data.name} v${mod.data.version}`,
+            `**Core:** ${game?.version ?? game.data.version}`,
+            `**System:** ${game.system.title} *${game.system.id}* v${game.system?.version ?? game.system.data.version}`,
+            `**Module Version:** ${mod?.title ?? mod.data.title} *${mod?.id ?? mod.data.name}* v${mod?.version ?? mod.data.version}`,
         ];
 
         // If any dependencies are present, add their details
@@ -365,7 +380,7 @@ class BugReportForm extends FormApplication {
         // generate module settings
         const moduleSettings = sendModSettings ? generateModuleSettings(mod) : "";
         // format errors / stack traces provided by API
-        const additionalDetails = apiDetails != false ? generateAdditionalDetails(apiDetails) : "";
+        const additionalDetails = (apiDetails ?? false) != false ? generateAdditionalDetails(apiDetails) : "";
 
         // construct gitlab link (if applicable)
         if (this.gitlab) {
