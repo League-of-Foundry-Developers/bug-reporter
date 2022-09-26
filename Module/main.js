@@ -194,7 +194,7 @@ class BugReportForm extends FormApplication {
      */
     get conflicts() {
         // Migrate Conflicts to v10 Format
-        let v9Conflicts = foundry.utils.mergeObject((this.module.data.conflicts ?? []), (this.module.flags.conflicts ?? []), {inplace: false})?.map((conflict) => {
+        let v9Conflicts = foundry.utils.mergeObject((this.module?.data?.conflicts ?? []), (this.module?.flags?.conflicts ?? []), {inplace: false})?.map((conflict) => {
             return {
                 id: conflict?.id ?? conflict?.name,
                 type: conflict.type,
@@ -208,7 +208,7 @@ class BugReportForm extends FormApplication {
             }
         });
 
-        return foundry.utils.mergeObject(v9Conflicts, (this.module.relationships.conflicts ?? []))?.map((conflict) => {
+        return foundry.utils.mergeObject(v9Conflicts, (this.module?.relationships?.conflicts ?? []))?.map((conflict) => {
             const mod = game.modules.get(conflict.id);
             let conflictingVersion = false;
             let versionChecks = false;
