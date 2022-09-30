@@ -25,7 +25,9 @@ const generateActiveModuleList = (separator = "--", versionMarker = "v") => {
     let data = [];
     let activeModules = [...game.modules].filter((module) => (module?.active ?? module?.[1]?.active) ?? false);
     activeModules.forEach(
-        (module) => (data = [...data, `${module?.id ?? module?.[1]?.name}${separator}${versionMarker}${module?.version ?? module?.[1]?.version};`])
+        (module) =>  {
+            data = [...data, `${module?.id ?? (module?.[1]?.name ?? module?.[1]?.id)}${separator}${versionMarker}${module?.version ?? (module?.[1]?.version ?? module?.[1]?.data?.version)};`];
+        }
     );
     return schema.replace(/{REPL_MODULES}/gi, data.join("\n"));
 };
@@ -42,7 +44,7 @@ const generateModuleSettings = (mod) => {
     // Find all keys in settings that belong to our module
     let modSettings = [];
     game.settings.settings.forEach((setting) => {
-        if (setting.module === mod.data.name) {
+        if ((setting?.namespace ?? setting?.module) === (mod?.id ?? (mod?.name ?? mod.data.name))) {
             // only allow scalars
             if (setting.config && setting.type !== "object") {
                 let trimmedKey = setting.key.replace("-", "").replace("_", "").replace(" ", "").toLowerCase();
@@ -194,7 +196,7 @@ class BugReportForm extends FormApplication {
      */
     get conflicts() {
         // Migrate Conflicts to v10 Format
-        let v9Conflicts = foundry.utils.mergeObject((this.module?.data?.conflicts ?? []), (this.module?.flags?.conflicts ?? []), {inplace: false})?.map((conflict) => {
+        let v9Conflicts = foundry.utils.mergeObject((this.module?.data?.conflicts ?? []), (this.module?.data?.flags?.conflicts ?? []), {inplace: false})?.map((conflict) => {
             return {
                 id: conflict?.id ?? conflict?.name,
                 type: conflict.type,
@@ -208,7 +210,7 @@ class BugReportForm extends FormApplication {
             }
         });
 
-        return foundry.utils.mergeObject(v9Conflicts, Array.from(this.module?.relationships?.conflicts?? [])).filter(conflict => {
+        return foundry.utils.mergeObject(v9Conflicts, Array.from(this.module?.relationships?.conflicts ?? [])).filter(conflict => {
             const mod = game.modules.get(conflict.id);
             return (mod ?? false) && (mod?.active ?? false);
         })?.map((conflict) => {
