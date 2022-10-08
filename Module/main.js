@@ -642,9 +642,11 @@ Hooks.once("init", () => {
                 const { selectedModule } = await getModuleSelection();
                 new BugReportForm(undefined, { selectedModule }).render(true);
             });
+            let buttonWrapper = $(`<div class="settings-bug-report"></div>`);
+            buttonWrapper.append(button);
             // Adds our button at the top of the sidebar, underneath
             // game version
-            button.insertAfter(html.find("#game-details"));
+            buttonWrapper.insertAfter(html.find("#game-details"));
         }
         // game.modules isn't populated until init, so we insert our API here.
         game.modules.get("bug-reporter").api = new BugReporterAPI();
